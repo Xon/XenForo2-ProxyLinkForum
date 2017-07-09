@@ -1,9 +1,0 @@
-{
-    "event_id": "templater_macro_post_render",
-    "execute_order": 10,
-    "callback_class": "\\SV\\ProxyLinkForum\\Listener",
-    "callback_method": "forumMacroPostRender",
-    "active": true,
-    "hint": "public:node_list_forum:forum",
-    "description": ""
-}
