@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Admin\\Controller\\LinkForum",
+    "to_class": "SV\\ProxyLinkForum\\XF\\Admin\\Controller\\LinkForum",
+    "execute_order": 10,
+    "active": true
+}
