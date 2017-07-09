@@ -1,0 +1,9 @@
+{
+    "template": "node_list_forum",
+    "description": "",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{{ link('forums', $node) }}",
+    "replace": "{{ $node.node_type_id == 'LinkForum' ? {$node.Data.link_url} : link('forums', $node) }}"
+}

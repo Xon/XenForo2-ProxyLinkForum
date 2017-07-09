@@ -1,0 +1,11 @@
+{
+    "entity_pre_save_SV-ProxyLinkForum-Listener_linkProxyEntityPreSave.json": {
+        "hash": "f8cf7163a6d3c01913c78d17192118a2"
+    },
+    "entity_structure_SV-ProxyLinkForum-Listener_linkProxyEntityStructure.json": {
+        "hash": "6978cf3dc91e63a33ab4b1c47cc77c7e"
+    },
+    "templater_macro_post_render_SV-ProxyLinkForum-Listener_forumMacroPostRender.json": {
+        "hash": "e12e3d5d677aa3fa6f036f0d1bdbede4"
+    }
+}
