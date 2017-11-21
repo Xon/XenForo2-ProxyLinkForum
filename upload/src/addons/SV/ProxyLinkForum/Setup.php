@@ -21,4 +21,12 @@ class Setup extends AbstractSetup
 			$table->addColumn('sv_proxy_node_id', 'int')->nullable();
 		});
 	}
+
+    public function uninstallStep1()
+    {
+        $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table)
+        {
+            $table->dropColumns(['sv_proxy_node_id']);
+        });
+    }
 }
