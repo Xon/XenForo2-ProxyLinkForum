@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "{{ link('forums', $node) }}",
-    "replace": "{{ $node.node_type_id == 'LinkForum' ? {$node.Data.link_url} : link('forums', $node) }}"
+    "replace": "{{ $extras.ProxiedForum ? link('forums', $extras.ProxiedForum) : link('forums', $node) }}"
 }

@@ -15,7 +15,9 @@ class LinkForum extends XFCP_LinkForum
     {
         if ($this->ProxiedForum)
         {
-            return $this->ProxiedForum->getNodeListExtras();
+            $output = $this->ProxiedForum->getNodeListExtras();
+            $output['ProxiedForum'] = $this->ProxiedForum;
+            return $output;
         }
 
         return parent::getNodeListExtras();
