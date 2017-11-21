@@ -21,6 +21,19 @@ class LinkForum extends XFCP_LinkForum
         return parent::getNodeListExtras();
     }
 
+    public static function getListedWith()
+    {
+        $visitor = \XF::visitor();
+        $with = [];
+
+        if ($visitor->user_id)
+        {
+            $with[] = "Read|{$visitor->user_id}";
+        }
+
+        return $with;
+    }
+
     public function getNodeTemplateRenderer($depth)
     {
         if (!$this->ProxiedForum)
@@ -59,6 +72,13 @@ class LinkForum extends XFCP_LinkForum
             'conditions'  => [['node_id', '=', '$sv_proxy_node_id']],
             'defaultWith' => 'node',
             'primary'     => true
+        ];
+
+        $structure->relations['Read'] = [
+            'entity'     => 'XF:ForumRead',
+            'type'       => self::TO_MANY,
+            'conditions' => [['node_id', '=', '$sv_proxy_node_id']],
+            'key'        => 'user_id'
         ];
 
         $structure->defaultWith[] = 'ProxiedForum';
