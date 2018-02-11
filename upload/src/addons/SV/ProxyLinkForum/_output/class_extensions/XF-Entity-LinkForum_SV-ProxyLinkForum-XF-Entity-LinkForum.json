@@ -1,6 +1,6 @@
 {
     "from_class": "XF\\Entity\\LinkForum",
     "to_class": "SV\\ProxyLinkForum\\XF\\Entity\\LinkForum",
-    "execute_order": 10,
+    "execute_order": 5845,
     "active": true
 }
