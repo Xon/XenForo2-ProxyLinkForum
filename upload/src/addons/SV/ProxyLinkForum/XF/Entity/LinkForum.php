@@ -6,6 +6,7 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
+ * @property \XF\Entity\ForumRead[] Read
  * @property \XF\Entity\Forum ProxiedForum
  * @property int|null sv_proxy_node_id
  */
@@ -13,10 +14,11 @@ class LinkForum extends XFCP_LinkForum
 {
     public function getNodeListExtras()
     {
-        if ($this->ProxiedForum)
+        if ($this->sv_proxy_node_id && isset($this->ProxiedForum))
         {
-            $output = $this->ProxiedForum->getNodeListExtras();
-            $output['ProxiedForum'] = $this->ProxiedForum;
+            $ProxiedForum = $this->ProxiedForum;
+            $output = $ProxiedForum->getNodeListExtras();
+            $output['ProxiedForum'] = $ProxiedForum;
             return $output;
         }
 
@@ -27,10 +29,12 @@ class LinkForum extends XFCP_LinkForum
     {
         $visitor = \XF::visitor();
         $with = [];
+        $with[] = 'ProxiedForum';
+        $with[] = 'ProxiedForum.Node';
 
         if ($visitor->user_id)
         {
-            $with[] = "Read|{$visitor->user_id}";
+            $with[] = "ProxiedForum.Read|{$visitor->user_id}";
         }
 
         return $with;
@@ -75,15 +79,6 @@ class LinkForum extends XFCP_LinkForum
             'defaultWith' => 'node',
             'primary'     => true
         ];
-
-        $structure->relations['Read'] = [
-            'entity'     => 'XF:ForumRead',
-            'type'       => self::TO_MANY,
-            'conditions' => [['node_id', '=', '$sv_proxy_node_id']],
-            'key'        => 'user_id'
-        ];
-
-        $structure->defaultWith[] = 'ProxiedForum';
 
         return $structure;
     }
