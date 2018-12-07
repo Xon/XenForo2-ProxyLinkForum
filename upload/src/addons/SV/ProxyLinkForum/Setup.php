@@ -20,11 +20,11 @@ class Setup extends AbstractSetup
     public function installStep1()
     {
         $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {
-            $this->addOrChangeColumn($table, 'sv_proxy_node_id', 'int')->nullable();
+            $this->addOrChangeColumn($table, 'sv_proxy_node_id', 'int')->nullable()->setDefault(null);
         });
     }
 
-    public function upgrade2000400Step1()
+    public function upgrade2000501Step1()
     {
         $this->installStep1();
     }

@@ -19,6 +19,7 @@ class LinkForum extends XFCP_LinkForum
             $ProxiedForum = $this->ProxiedForum;
             $output = $ProxiedForum->getNodeListExtras();
             $output['ProxiedForum'] = $ProxiedForum;
+
             return $output;
         }
 
@@ -66,11 +67,7 @@ class LinkForum extends XFCP_LinkForum
     {
         $structure = parent::getStructure($structure);
 
-        $structure->columns['sv_proxy_node_id'] = [
-            'type'     => Entity::UINT,
-            'nullable' => true,
-            'default'  => null
-        ];
+        $structure->columns['sv_proxy_node_id'] = ['type' => Entity::UINT, 'nullable' => true, 'default' => null];
 
         $structure->relations['ProxiedForum'] = [
             'entity'      => 'XF:Forum',
