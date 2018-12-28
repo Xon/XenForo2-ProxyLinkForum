@@ -54,7 +54,7 @@ class LinkForum extends XFCP_LinkForum
         ];
     }
 
-    public function _preSave()
+    protected function _preSave()
     {
         if ($this->sv_proxy_node_id && !$this->link_url)
         {
