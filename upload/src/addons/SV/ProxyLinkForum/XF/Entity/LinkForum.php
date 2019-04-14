@@ -14,9 +14,15 @@ class LinkForum extends XFCP_LinkForum
 {
     public function getNodeListExtras()
     {
-        if ($this->sv_proxy_node_id && $this->ProxiedForum)
+        if ($this->sv_proxy_node_id && $this->isValidRelation('ProxiedForum'))
         {
-            $output['ProxiedForum'] = $this->ProxiedForum->getNodeListExtras();
+            $proxiedForum = $this->ProxiedForum;
+            if ($proxiedForum)
+            {
+                $proxiedForum = $this->ProxiedForum;
+                $output = $proxiedForum->getNodeListExtras();
+                $output['ProxiedForum'] = $proxiedForum;
+            }
 
             return $output;
         }
@@ -27,13 +33,12 @@ class LinkForum extends XFCP_LinkForum
     public static function getListedWith()
     {
         $visitor = \XF::visitor();
-        $with = [];
-        $with[] = 'ProxiedForum';
-        $with[] = 'ProxiedForum.Node';
+        $userId = $visitor->user_id;
+        $with = ['ProxiedForum', 'ProxiedForum.Node'];
 
-        if ($visitor->user_id)
+        if ($userId)
         {
-            $with[] = "ProxiedForum.Read|{$visitor->user_id}";
+            $with[] = "ProxiedForum.Read|{$userId}";
         }
 
         return $with;
