@@ -14,11 +14,9 @@ class LinkForum extends XFCP_LinkForum
 {
     public function getNodeListExtras()
     {
-        if ($this->sv_proxy_node_id && isset($this->ProxiedForum))
+        if ($this->sv_proxy_node_id && $this->ProxiedForum)
         {
-            $ProxiedForum = $this->ProxiedForum;
-            $output = $ProxiedForum->getNodeListExtras();
-            $output['ProxiedForum'] = $ProxiedForum;
+            $output['ProxiedForum'] = $this->ProxiedForum->getNodeListExtras();
 
             return $output;
         }
@@ -56,7 +54,7 @@ class LinkForum extends XFCP_LinkForum
 
     protected function _preSave()
     {
-        if ($this->sv_proxy_node_id && !$this->link_url)
+        if (($this->sv_proxy_node_id && $this->ProxiedForum) && !$this->link_url)
         {
             $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $this->ProxiedForum);
         }
