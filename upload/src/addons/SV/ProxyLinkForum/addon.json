@@ -10,7 +10,6 @@
     "support_url": "https://xenforo.com/community/resources/proxy-link-forum.5845/",
     "extra_urls": [],
     "require" : {
-        "XF": [2010070, "XenForo 2.1.0+"],
         "php": ["5.6.0", "PHP 5.6.0+"]
     },
     "icon": "fa-link"

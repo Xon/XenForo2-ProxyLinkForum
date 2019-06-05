@@ -33,11 +33,16 @@ class LinkForum extends XFCP_LinkForum
     {
         $visitor = \XF::visitor();
         $userId = $visitor->user_id;
-        $with = ['ProxiedForum', 'ProxiedForum.Node'];
+        $isXF21 = \XF::$versionId > 2010070;
+        $with = $isXF21 ? ['ProxiedForum', 'ProxiedForum.Node', 'ProxiedForum.LastPostUser', 'ProxiedForum.LastThread'] : ['ProxiedForum', 'ProxiedForum.Node'];
 
         if ($userId)
         {
             $with[] = "ProxiedForum.Read|{$userId}";
+            if ($isXF21)
+            {
+                $with[] = "ProxiedForum.LastThread.Read|{$userId}";
+            }
         }
 
         return $with;
