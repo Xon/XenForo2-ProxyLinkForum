@@ -4,6 +4,6 @@
     "execution_order": 5846,
     "enabled": true,
     "action": "str_replace",
-    "find": "$node.Data.TypeHandler",
-    "replace": "($extras.ProxiedForum ? $extras.ProxiedForum.TypeHandler : $node.Data.TypeHandler)"
+    "find": "$node.Data.TypeHandler.getTypeIconClass()",
+    "replace": "($extras.ProxiedForum ? $extras.ProxiedForum.TypeHandler.getTypeIconClass() : $node.Data.TypeHandler.getTypeIconClass())"
 }
