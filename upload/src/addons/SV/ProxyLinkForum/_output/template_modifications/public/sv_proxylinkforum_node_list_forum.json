@@ -1,6 +1,6 @@
 {
     "template": "node_list_forum",
-    "description": "",
+    "description": "Patch links",
     "execution_order": 5845,
     "enabled": true,
     "action": "str_replace",

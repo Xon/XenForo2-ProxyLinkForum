@@ -1,0 +1,9 @@
+{
+    "template": "node_list_forum",
+    "description": "Patch icon",
+    "execution_order": 5846,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "$node.Data.TypeHandler",
+    "replace": "($extras.ProxiedForum ? $extras.ProxiedForum.TypeHandler : $node.Data.TypeHandler)"
+}
