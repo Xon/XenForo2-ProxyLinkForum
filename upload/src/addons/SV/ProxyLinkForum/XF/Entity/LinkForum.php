@@ -12,6 +12,7 @@ use XF\Mvc\Entity\Structure;
  */
 class LinkForum extends XFCP_LinkForum
 {
+    /** @noinspection PhpMissingReturnTypeInspection */
     public function getNodeListExtras()
     {
         if ($this->sv_proxy_node_id && $this->isValidRelation('ProxiedForum'))
@@ -33,6 +34,7 @@ class LinkForum extends XFCP_LinkForum
         return parent::getNodeListExtras();
     }
 
+    /** @noinspection PhpMissingReturnTypeInspection */
     public static function getListedWith()
     {
         $visitor = \XF::visitor();
@@ -52,6 +54,7 @@ class LinkForum extends XFCP_LinkForum
         return $with;
     }
 
+    /** @noinspection PhpMissingReturnTypeInspection */
     public function getNodeTemplateRenderer($depth)
     {
         if (!$this->ProxiedForum)
@@ -74,6 +77,7 @@ class LinkForum extends XFCP_LinkForum
         parent::_preSave();
     }
 
+    /** @noinspection PhpMissingReturnTypeInspection */
     public static function getStructure(Structure $structure)
     {
         $structure = parent::getStructure($structure);

@@ -4,8 +4,6 @@ namespace SV\ProxyLinkForum\XF\Search\Data;
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
 use XF\Mvc\Entity\AbstractCollection;
-use XF\Mvc\Entity\ArrayCollection;
-use XF\Search\Query\MetadataConstraint;
 
 /**
  * Extends \XF\Search\Data\Post
