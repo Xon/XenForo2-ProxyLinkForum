@@ -12,3 +12,8 @@ namespace SV\ProxyLinkForum\XF\Entity
 {
 	class XFCP_LinkForum extends \XF\Entity\LinkForum {}
 }
+
+namespace SV\ProxyLinkForum\XF\Search\Data
+{
+	class XFCP_Post extends \XF\Search\Data\Post {}
+}
