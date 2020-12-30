@@ -134,6 +134,7 @@ class Post extends XFCP_Post
 
                         if ($change)
                         {
+                            // ensure this is an json integer list, and not a json object of string values
                             $constraint->setValues(\array_values($shimmedNodeIds));
                         }
                     }
