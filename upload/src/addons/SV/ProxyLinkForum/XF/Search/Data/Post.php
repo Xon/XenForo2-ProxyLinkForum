@@ -118,8 +118,9 @@ class Post extends XFCP_Post
                     if ($constraint->getKey() === 'node')
                     {
                         $change = false;
+                        $shimmedNodeIds = [];
                         $nodeIds = $constraint->getValues();
-                        foreach ($nodeIds as &$nodeId)
+                        foreach ($nodeIds as $nodeId)
                         {
                             // patch nodes with '_' ids
                             if (is_string($nodeId) && $nodeId[0] === '_')
@@ -127,11 +128,13 @@ class Post extends XFCP_Post
                                 $change = true;
                                 $nodeId = (int)\substr($nodeId, 1);
                             }
+
+                            $shimmedNodeIds[$nodeId] = $nodeId;
                         }
 
                         if ($change)
                         {
-                            $constraint->setValues(\array_unique($nodeIds));
+                            $constraint->setValues(\array_values($shimmedNodeIds));
                         }
                     }
                 }
