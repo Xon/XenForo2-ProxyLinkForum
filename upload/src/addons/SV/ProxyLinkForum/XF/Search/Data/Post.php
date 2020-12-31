@@ -4,6 +4,7 @@ namespace SV\ProxyLinkForum\XF\Search\Data;
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
 use XF\Mvc\Entity\AbstractCollection;
+use XF\Search\Query\MetadataConstraint;
 
 /**
  * Extends \XF\Search\Data\Post
@@ -101,6 +102,32 @@ class Post extends XFCP_Post
         return $nodeTree;
     }
 
+    protected function rewriteProxiedNodes(MetadataConstraint $constraint): bool
+    {
+        $change = false;
+        $shimmedNodeIds = [];
+        $nodeIds = $constraint->getValues();
+        foreach ($nodeIds as $nodeId)
+        {
+            // patch nodes with '_' ids
+            if (is_string($nodeId) && $nodeId[0] === '_')
+            {
+                $change = true;
+                $nodeId = (int)\substr($nodeId, 1);
+            }
+
+            $shimmedNodeIds[$nodeId] = $nodeId;
+        }
+
+        if ($change)
+        {
+            // ensure this is an json integer list, and not a json object of string values
+            $constraint->setValues(\array_values($shimmedNodeIds));
+        }
+
+        return $change;
+    }
+
     public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
@@ -117,26 +144,7 @@ class Post extends XFCP_Post
                 {
                     if ($constraint->getKey() === 'node')
                     {
-                        $change = false;
-                        $shimmedNodeIds = [];
-                        $nodeIds = $constraint->getValues();
-                        foreach ($nodeIds as $nodeId)
-                        {
-                            // patch nodes with '_' ids
-                            if (is_string($nodeId) && $nodeId[0] === '_')
-                            {
-                                $change = true;
-                                $nodeId = (int)\substr($nodeId, 1);
-                            }
-
-                            $shimmedNodeIds[$nodeId] = $nodeId;
-                        }
-
-                        if ($change)
-                        {
-                            // ensure this is an json integer list, and not a json object of string values
-                            $constraint->setValues(\array_values($shimmedNodeIds));
-                        }
+                        $this->rewriteProxiedNodes($constraint);
                     }
                 }
             }
