@@ -1,0 +1,9 @@
+{
+    "template": "permission_node_overview",
+    "description": "Inject if a link forum is a proxy into the node permissions list",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{$node.NodeType.title}",
+    "replace": "$0 {{ ($node.node_type_id === 'LinkForum' && $node.Data.ProxiedForum) ? phrase('(sv_linkforumproxy_proxy)') : '' }}"
+}
