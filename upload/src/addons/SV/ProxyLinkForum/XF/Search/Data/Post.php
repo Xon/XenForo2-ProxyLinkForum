@@ -16,6 +16,9 @@ class Post extends XFCP_Post
      */
     protected $armSearchNodeHacks = false;
 
+    /** @var bool */
+    protected $shimmedProxyNodes = false;
+
     protected function injectProxiedSubNodes(AbstractCollection $nodes): AbstractCollection
     {
         $shimmedNodes = [];
@@ -54,6 +57,7 @@ class Post extends XFCP_Post
                         $childNode->rgt <= $rgt &&
                         $childNode->node_type_id === 'Forum')
                     {
+                        $this->shimmedProxyNodes = true;
                         $fakeNodeId = '_' . $realForumId;
                         // create a fake node
                         /** @var \XF\Entity\Node $node */
@@ -138,6 +142,7 @@ class Post extends XFCP_Post
 
     public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
+        $this->shimmedProxyNodes = false;
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
                                     $request->filter('c.nodes', 'array-uint') &&
                                     $request->filter('c.child_nodes', 'bool');
@@ -145,7 +150,7 @@ class Post extends XFCP_Post
         {
             parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
-            if ($this->armSearchNodeHacks)
+            if ($this->armSearchNodeHacks && $this->shimmedProxyNodes)
             {
                 $constraints = $query->getMetadataConstraints();
                 foreach ($constraints as $constraint)
@@ -159,6 +164,7 @@ class Post extends XFCP_Post
         }
         finally
         {
+            $this->shimmedProxyNodes = false;
             $this->armSearchNodeHacks = false;
         }
     }
