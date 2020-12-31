@@ -103,7 +103,7 @@ class LinkForum extends XFCP_LinkForum
             'defaultWith' => 'node',
             'primary'     => true
         ];
-        $structure->relations['ProxiedForum'] = ['getter' => '', 'cache' => false];
+        $structure->getters['ProxiedForum'] = ['getter' => 'getProxiedForum', 'cache' => false];
 
         return $structure;
     }
