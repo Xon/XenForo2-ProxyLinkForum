@@ -115,11 +115,20 @@ class Post extends XFCP_Post
 
     protected function rewriteProxiedNodes(MetadataConstraint $constraint): bool
     {
+        $em = \XF::em();
         $change = false;
         $shimmedNodeIds = [];
         $nodeIds = $constraint->getValues();
         foreach ($nodeIds as $nodeId)
         {
+            /** @var \XF\Entity\Node $node */
+            $node = $em->findCached('XF:Node', $nodeId);
+            if ($node && $node->node_type_id === 'LinkForum')
+            {
+                $change = true;
+                continue;
+            }
+
             // patch nodes with '_' ids
             if (is_string($nodeId) && $nodeId[0] === '_')
             {
