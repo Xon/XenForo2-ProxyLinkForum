@@ -33,13 +33,13 @@ class Post extends XFCP_Post
             {
                 /** @var ExtendedLinkForumEntity $linkForum */
                 $linkForum = $node->Data;
-                $realForumId = $linkForum->sv_proxy_node_id;
-                $realForum = $realForumId ? $linkForum->ProxiedForum : null;
+                $realForum = $linkForum->ProxiedForum;
                 if (!$realForum)
                 {
                     // don't bother including non-proxy link forum nodes
                     continue;
                 }
+                $realForumId = $linkForum->sv_proxy_node_id;
                 $shimmedNodes[$nodeId] = $node;
                 // generate fake nodes for any child-nodes of the target
                 $realNode = $realForum->Node;
@@ -84,6 +84,13 @@ class Post extends XFCP_Post
     protected function getSearchableNodeTree()
     {
         if (!$this->armSearchNodeHacks)
+        {
+            return parent::getSearchableNodeTree();
+        }
+
+        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
+        $hasProxyForum = $structure->relations['ProxiedForum'] ?? false;
+        if (!$hasProxyForum)
         {
             return parent::getSearchableNodeTree();
         }

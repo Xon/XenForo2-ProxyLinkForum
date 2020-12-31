@@ -6,8 +6,8 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
- * @property \XF\Entity\ForumRead[] Read
  * @property \XF\Entity\Forum ProxiedForum
+ * @property \XF\Entity\Forum ProxiedForum_
  * @property int|null sv_proxy_node_id
  */
 class LinkForum extends XFCP_LinkForum
@@ -15,20 +15,14 @@ class LinkForum extends XFCP_LinkForum
     /** @noinspection PhpMissingReturnTypeInspection */
     public function getNodeListExtras()
     {
-        if ($this->sv_proxy_node_id && $this->isValidRelation('ProxiedForum'))
+        $proxiedForum = $this->ProxiedForum;
+        if ($proxiedForum)
         {
-            $proxiedForum = $this->ProxiedForum;
-            if ($proxiedForum)
-            {
-                $output = $proxiedForum->getNodeListExtras();
-                $output['ProxiedForum'] = $proxiedForum;
-            }
-            else
-            {
-                $output = null;
-            }
+            $output = $proxiedForum->getNodeListExtras();
+            $output = $output ?: [];
+            $output['ProxiedForum'] = $proxiedForum;
 
-            return $output ?: [];
+            return $output;
         }
 
         return parent::getNodeListExtras();
@@ -68,12 +62,30 @@ class LinkForum extends XFCP_LinkForum
         ];
     }
 
+
+    /**
+     * @return \XF\Entity\Forum|null
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    protected function getProxiedForum()
+    {
+        if (!$this->sv_proxy_node_id)
+        {
+            return null;
+        }
+
+        return $this->ProxiedForum_;
+    }
+
     protected function _preSave()
     {
-        if (($this->sv_proxy_node_id && $this->ProxiedForum) && !$this->link_url)
+        $proxiedForum = $this->ProxiedForum;
+
+        if ($proxiedForum && !$this->link_url)
         {
-            $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $this->ProxiedForum);
+            $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $proxiedForum);
         }
+
         parent::_preSave();
     }
 
@@ -91,6 +103,7 @@ class LinkForum extends XFCP_LinkForum
             'defaultWith' => 'node',
             'primary'     => true
         ];
+        $structure->relations['ProxiedForum'] = ['getter' => '', 'cache' => false];
 
         return $structure;
     }
