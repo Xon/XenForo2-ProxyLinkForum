@@ -71,6 +71,7 @@ class Post extends XFCP_Post
                             $fakeNode->setTrusted('sv_aggregate_allowed', $childNode->sv_aggregate_allowed);
                             $fakeNode->setTrusted('sv_aggregate_default', $childNode->sv_aggregate_default);
                         }
+                        $fakeNode->hydrateRelation('Parent', $node);
 
                         $shimmedNodes[$fakeNodeId] = $fakeNode;
                     }
