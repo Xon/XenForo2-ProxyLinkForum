@@ -16,7 +16,7 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum)
+        if ($proxiedForum && $proxiedForum->canView())
         {
             $output = $proxiedForum->getNodeListExtras();
             $output = $output ?: [];
@@ -51,7 +51,8 @@ class LinkForum extends XFCP_LinkForum
     /** @noinspection PhpMissingReturnTypeInspection */
     public function getNodeTemplateRenderer($depth)
     {
-        if (!$this->ProxiedForum)
+        $proxiedForum = $this->ProxiedForum;
+        if (!$proxiedForum || !$proxiedForum->canView())
         {
             return parent::getNodeTemplateRenderer($depth);
         }
