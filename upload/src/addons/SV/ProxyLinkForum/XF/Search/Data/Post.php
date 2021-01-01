@@ -132,27 +132,24 @@ class Post extends XFCP_Post
             $node = $em->findCached('XF:Node', $nodeId);
             if (!$node)
             {
-                // just preserve as-is
+                if (is_string($nodeId) && $nodeId[0] === '_')
+                {
+                    // patch nodes with '_' ids, these are pseudo-forums under the existing parent
+                    // proxied forums are automatically children of the search node roots, so they should always be included
+                    $change = true;
+                    $nodeId = (int)\substr($nodeId, 1);
+                }
                 $shimmedNodeIds[$nodeId] = $nodeId;
-                continue;
             }
-
-            if ($node->node_type_id === 'LinkForum')
+            else if ($node->node_type_id === 'LinkForum')
             {
                 // A link-proxy which is not a proxy forum, skip
                 $change = true;
-                continue;
             }
-
-            if (is_string($nodeId) && $nodeId[0] === '_')
+            else
             {
-                // patch nodes with '_' ids, these are pseudo-forums under the existing parent
-                // proxied forums are automatically children of the search node roots, so they should always be included
-                $change = true;
-                $nodeId = (int)\substr($nodeId, 1);
+                $shimmedNodeIds[$nodeId] = $nodeId;
             }
-
-            $shimmedNodeIds[$nodeId] = $nodeId;
         }
 
         if ($change)
