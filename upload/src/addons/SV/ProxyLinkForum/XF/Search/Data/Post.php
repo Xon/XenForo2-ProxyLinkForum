@@ -37,7 +37,7 @@ class Post extends XFCP_Post
                 /** @var ExtendedLinkForumEntity $linkForum */
                 $linkForum = $node->Data;
                 $realForum = $linkForum->ProxiedForum;
-                if (!$realForum)
+                if (!$realForum || !$realForum->canView())
                 {
                     // don't bother including non-proxy link forum nodes
                     continue;
@@ -130,15 +130,24 @@ class Post extends XFCP_Post
         {
             /** @var \XF\Entity\Node $node */
             $node = $em->findCached('XF:Node', $nodeId);
-            if ($node && $node->node_type_id === 'LinkForum')
+            if (!$node)
             {
+                // just preserve as-is
+                $shimmedNodeIds[$nodeId] = $nodeId;
+                continue;
+            }
+
+            if ($node->node_type_id === 'LinkForum')
+            {
+                // A link-proxy which is not a proxy forum, skip
                 $change = true;
                 continue;
             }
 
-            // patch nodes with '_' ids
             if (is_string($nodeId) && $nodeId[0] === '_')
             {
+                // patch nodes with '_' ids, these are pseudo-forums under the existing parent
+                // proxied forums are automatically children of the search node roots, so they should always be included
                 $change = true;
                 $nodeId = (int)\substr($nodeId, 1);
             }
@@ -159,8 +168,9 @@ class Post extends XFCP_Post
     public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
         $this->shimmedProxyNodes = false;
+        $searchNodeRoots = $this->searchNodeRoots ?? $request->filter('c.nodes', 'array-uint');
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
-                                    $request->filter('c.nodes', 'array-uint') &&
+                                    ($searchNodeRoots && reset($searchNodeRoots)) &&
                                     $request->filter('c.child_nodes', 'bool');
         try
         {
