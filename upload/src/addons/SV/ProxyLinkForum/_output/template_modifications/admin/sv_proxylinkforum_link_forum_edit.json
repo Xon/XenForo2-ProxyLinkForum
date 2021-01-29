@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "<xf:macro template=\"node_edit_macros\" name=\"position\" arg-node=\"{$node}\" arg-nodeTree=\"{$nodeTree}\" />",
-    "replace": "<xf:selectrow name=\"sv_proxy_node_id\" value=\"{$link.sv_proxy_node_id}\"\n\t\tlabel=\"{{ phrase('sv_linkforumproxy_proxy_forum') }}\">\n\n\t\t<xf:option value=\"0\">{{ phrase('(none)') }}</xf:option>\n\n\t\t<xf:foreach loop=\"$nodeTree.getFlattened(0)\" value=\"$treeEntry\">\n\t\t\t<xf:option value=\"{$treeEntry.record.node_id}\" disabled=\"{{ $treeEntry.record.node_type_id != 'Forum' }}\">{{ repeat('--', $treeEntry.depth) }} {$treeEntry.record.title}</xf:option>\n\t\t</xf:foreach>\n</xf:selectrow>\n$0"
+    "replace": "<xf:selectrow name=\"sv_proxy_node_id\" value=\"{$link.sv_proxy_node_id}\"\n\t\tlabel=\"{{ phrase('sv_linkforumproxy_proxy_forum') }}\">\n\n\t\t<xf:option value=\"0\">{{ phrase('(none)') }}</xf:option>\n\n\t\t<xf:foreach loop=\"$nodeTree.getFlattened(0)\" value=\"$treeEntry\">\n\t\t\t<xf:option value=\"{$treeEntry.record.node_id}\" disabled=\"{{ !in_array($treeEntry.record.node_type_id, ['Forum', 'Category']) }}\">{{ repeat('--', $treeEntry.depth) }} {$treeEntry.record.title}</xf:option>\n\t\t</xf:foreach>\n</xf:selectrow>\n$0"
 }

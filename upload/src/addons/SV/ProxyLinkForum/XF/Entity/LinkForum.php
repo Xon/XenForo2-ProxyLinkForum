@@ -8,6 +8,8 @@ use XF\Mvc\Entity\Structure;
 /**
  * @property \XF\Entity\Forum ProxiedForum
  * @property \XF\Entity\Forum ProxiedForum_
+ * @property \XF\Entity\Category ProxiedCategory
+ * @property \XF\Entity\Category ProxiedCategory_
  * @property int|null sv_proxy_node_id
  */
 class LinkForum extends XFCP_LinkForum
@@ -16,12 +18,17 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
+        $output = [];
         if ($proxiedForum && $proxiedForum->canView())
         {
-            $output = $proxiedForum->getNodeListExtras();
-            $output = $output ?: [];
-            $output['ProxiedForum'] = $proxiedForum;
+            $output['ProxiedNode'] = $proxiedForum;
+            return $output;
+        }
 
+        $proxiedCategory = $this->ProxiedCategory;
+        if ($proxiedCategory && $proxiedCategory->canView())
+        {
+            $output['ProxiedNode'] = $proxiedCategory;
             return $output;
         }
 
@@ -34,7 +41,8 @@ class LinkForum extends XFCP_LinkForum
         $visitor = \XF::visitor();
         $userId = $visitor->user_id;
         $isXF21 = \XF::$versionId > 2010070;
-        $with = $isXF21 ? ['ProxiedForum', 'ProxiedForum.Node', 'ProxiedForum.LastPostUser', 'ProxiedForum.LastThread'] : ['ProxiedForum', 'ProxiedForum.Node'];
+        $with = $isXF21 ? ['ProxiedForum.LastPostUser', 'ProxiedForum.LastThread'] : [];
+        $with = array_merge($with, ['ProxiedForum', 'ProxiedForum.Node', 'ProxiedCategory', 'ProxiedCategory.Node']);
 
         if ($userId)
         {
@@ -52,15 +60,22 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeTemplateRenderer($depth)
     {
         $proxiedForum = $this->ProxiedForum;
-        if (!$proxiedForum || !$proxiedForum->canView())
-        {
-            return parent::getNodeTemplateRenderer($depth);
+        if ($proxiedForum && $proxiedForum->canView()) {
+            return [
+                'template' => 'node_list_forum',
+                'macro'    => $depth <= 2 ? 'depth' . $depth : 'depthN'
+            ];
         }
 
-        return [
-            'template' => 'node_list_forum',
-            'macro'    => $depth <= 2 ? 'depth' . $depth : 'depthN'
-        ];
+        $proxiedCategory = $this->ProxiedCategory;
+        if ($proxiedCategory && $proxiedCategory->canView()) {
+            return [
+                'template' => 'node_list_category',
+                'macro'    => $depth <= 2 ? 'depth' . $depth : 'depthN'
+            ];
+        }
+
+        return parent::getNodeTemplateRenderer($depth);
     }
 
 
@@ -78,13 +93,33 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedForum_;
     }
 
+    /**
+     * @return \XF\Entity\Category|null
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    protected function getProxiedCategory()
+    {
+        if (!$this->sv_proxy_node_id)
+        {
+            return null;
+        }
+
+        return $this->ProxiedCategory_;
+    }
+
     protected function _preSave()
     {
         $proxiedForum = $this->ProxiedForum;
-
         if ($proxiedForum && !$this->link_url)
         {
             $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $proxiedForum);
+        }
+
+
+        $proxiedCategory = $this->ProxiedCategory;
+        if ($proxiedCategory && !$this->link_url)
+        {
+            $this->link_url = $this->app()->router('public')->buildLink('canonical:categories', $proxiedCategory);
         }
 
         parent::_preSave();
@@ -104,7 +139,16 @@ class LinkForum extends XFCP_LinkForum
             'defaultWith' => 'node',
             'primary'     => true
         ];
+        $structure->relations['ProxiedCategory'] = [
+            'entity'      => 'XF:Category',
+            'type'        => Entity::TO_ONE,
+            'conditions'  => [['node_id', '=', '$sv_proxy_node_id']],
+            'defaultWith' => 'node',
+            'primary'     => true
+        ];
+
         $structure->getters['ProxiedForum'] = ['getter' => 'getProxiedForum', 'cache' => false];
+        $structure->getters['ProxiedCategory'] = ['getter' => 'getProxiedCategory', 'cache' => false];
 
         return $structure;
     }

@@ -1,7 +1,7 @@
 {
-    "template": "node_list_forum",
+    "template": "node_list_category",
     "description": "Patch icon",
-    "execution_order": 5846,
+    "execution_order": 10,
     "enabled": true,
     "action": "str_replace",
     "find": "$node.Data.TypeHandler.getTypeIconClass()",

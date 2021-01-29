@@ -2,17 +2,13 @@
     "legacy_addon_id": "SV_ProxyLinkForum",
     "title": "Proxy Link Forum",
     "description": "Converts link forums into proxies for actual forums",
-    "version_id": 2010600,
-    "version_string": "2.1.6",
-    "dev" : "Xon",
+    "version_id": 2020070,
+    "version_string": "2.2.0",
+    "dev": "Xon",
     "dev_url": "https://atelieraphelion.com/",
     "faq_url": "",
     "support_url": "https://xenforo.com/community/resources/proxy-link-forum.5845/",
     "extra_urls": [],
-    "require" : {
-        "XF": [2010070, "XenForo 2.1.0+"],
-        "php": ["7.0.0", "PHP 7.0.0+"],
-        "SV/StandardLib": [1000000,"Standard Library by Xon v1.0.0+"]
     },
     "icon": "fa-link"
 }

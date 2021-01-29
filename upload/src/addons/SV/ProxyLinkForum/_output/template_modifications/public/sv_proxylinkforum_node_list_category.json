@@ -1,0 +1,9 @@
+{
+    "template": "node_list_category",
+    "description": "Patch links",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{{ link('categories', $node) }}",
+    "replace": "{{ $extras.ProxiedNode ? link('categories', $extras.ProxiedNode) : link('categories', $node) }}"
+}
