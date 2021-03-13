@@ -2,7 +2,7 @@
 
 namespace SV\ProxyLinkForum\XF\Search\Data;
 
-use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
+use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Search\Query\MetadataConstraint;
 
@@ -19,105 +19,43 @@ class Post extends XFCP_Post
     /** @var bool */
     protected $shimmedProxyNodes = false;
 
+    /**
+     * @deprecated Since 2.1.5
+     *
+     * @param AbstractCollection $nodes
+     *
+     * @return AbstractCollection
+     */
     protected function injectProxiedSubNodes(AbstractCollection $nodes): AbstractCollection
     {
-        $shimmedNodes = [];
-        $em = \XF::em();
-
-        $nodes = $nodes->toArray();
-        $nodes = \array_values($nodes);
-        $nodeCount = count($nodes);
-
-        /** @var \XF\Entity\Node[] $nodes */
-        foreach ($nodes as $node)
-        {
-            $nodeId = $node->node_id;
-            if ($node->node_type_id === 'LinkForum')
-            {
-                /** @var ExtendedLinkForumEntity $linkForum */
-                $linkForum = $node->Data;
-                $realForum = $linkForum->ProxiedForum;
-                if (!$realForum || !$realForum->canView())
-                {
-                    // don't bother including non-proxy link forum nodes
-                    continue;
-                }
-                $realForumId = $linkForum->sv_proxy_node_id;
-                $shimmedNodes[$nodeId] = $node;
-                // generate fake nodes for any child-nodes of the target
-                $realNode = $realForum->Node;
-                $lft = $realNode->lft;
-                $rgt = $realNode->rgt;
-
-                for ($i = 0; $i < $nodeCount; $i++)
-                {
-                    $childNode = $nodes[$i];
-                    // todo nested link proxy forum handling?
-                    if ($childNode->lft >= $lft &&
-                        $childNode->rgt <= $rgt &&
-                        $childNode->node_type_id === 'Forum')
-                    {
-                        $this->shimmedProxyNodes = true;
-                        $fakeNodeId = '_' . $realForumId;
-                        // create a fake node
-                        /** @var \XF\Entity\Node $fakeNode */
-                        $fakeNode = $em->create('XF:Node');
-                        $fakeNode->setTrusted('node_id', $fakeNodeId);
-                        $fakeNode->setTrusted('parent_node_id', $nodeId);
-                        $fakeNode->setTrusted('node_type_id', 'Forum');
-                        $fakeNode->setTrusted('display_in_list', $childNode->display_in_list);
-                        if ($childNode->isValidColumn('sv_aggregate_default'))
-                        {
-                            $fakeNode->setTrusted('sv_aggregate_allowed', $childNode->sv_aggregate_allowed);
-                            $fakeNode->setTrusted('sv_aggregate_default', $childNode->sv_aggregate_default);
-                        }
-                        $fakeNode->hydrateRelation('Parent', $node);
-
-                        $shimmedNodes[$fakeNodeId] = $fakeNode;
-                    }
-                }
-
-                continue;
-            }
-
-            $shimmedNodes[$nodeId] = $node;
-        }
-
-        return $em->getBasicCollection($shimmedNodes);
+        /** @var ExtendedNodeRepo $nodeRepo */
+        $nodeRepo = \XF::repository('XF:Node');
+        return $nodeRepo->injectProxiedSubNodesForSvProxyLinkForum($nodes);
     }
 
     /**
      * @return \XF\Tree
-     *
-     * @noinspection PhpUnusedParameterInspection
-     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getSearchableNodeTree()
     {
-        if (!$this->armSearchNodeHacks)
-        {
-            return parent::getSearchableNodeTree();
-        }
-
+        /** @var ExtendedNodeRepo $nodeRepo */
+        $nodeRepo = \XF::repository('XF:Node');
         $structure = \XF::em()->getEntityStructure('XF:LinkForum');
         $hasProxyForum = $structure->relations['ProxiedForum'] ?? false;
-        if (!$hasProxyForum)
+
+        if ($this->armSearchNodeHacks && $hasProxyForum)
+        {
+            $nodeRepo->setInjectProxiedSubNodesForSvProxyLinkForum('getNodeList');
+        }
+
+        try
         {
             return parent::getSearchableNodeTree();
         }
-
-        /** @var \XF\Repository\Node $nodeRepo */
-        $nodeRepo = \XF::repository('XF:Node');
-        $nodes = $this->injectProxiedSubNodes($nodeRepo->getNodeList());
-        $nodeTree = $nodeRepo->createNodeTree($nodes);
-
-        // only list nodes that are forums or contain forums
-        $nodeTree = $nodeTree->filter(null, function ($id, $node, $depth, $children, $tree) {
-            /** @var \XF\Entity\Node $node */
-            return ($children || $node->node_type_id === 'Forum');
-        });
-
-        return $nodeTree;
+        finally
+        {
+            $nodeRepo->clearInjectProxiedSubNodesForSvProxyLinkForum('getNodeList');
+        }
     }
 
     protected function rewriteProxiedNodes(MetadataConstraint $constraint): bool
@@ -169,6 +107,15 @@ class Post extends XFCP_Post
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
                                     ($searchNodeRoots && reset($searchNodeRoots)) &&
                                     $request->filter('c.child_nodes', 'bool');
+
+        /** @var ExtendedNodeRepo $nodeRepo */
+        $nodeRepo = \XF::repository('XF:Node');
+        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
+        if ($this->armSearchNodeHacks && ($structure->relations['ProxiedForum'] ?? false))
+        {
+            $nodeRepo->setInjectProxiedSubNodesForSvProxyLinkForum('getFullNodeListWithTypeData');
+        }
+
         try
         {
             parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
@@ -189,6 +136,8 @@ class Post extends XFCP_Post
         {
             $this->shimmedProxyNodes = false;
             $this->armSearchNodeHacks = false;
+
+            $nodeRepo->clearInjectProxiedSubNodesForSvProxyLinkForum('getFullNodeListWithTypeData');
         }
     }
 }
