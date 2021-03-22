@@ -43,6 +43,22 @@ class Node extends XFCP_Node
 
     /**
      * @param NodeEntity|null $withinNode
+     * @return AbstractCollection
+     */
+    public function getNodeList(NodeEntity $withinNode = null)
+    {
+        $nodeList = parent::getNodeList($withinNode);
+
+        if ($this->isInjectingProxiedSubNodesForSvProxyLinkForum(__FUNCTION__))
+        {
+            $nodeList = $this->injectProxiedSubNodesForSvProxyLinkForum($nodeList);
+        }
+
+        return $nodeList;
+    }
+
+    /**
+     * @param NodeEntity|null $withinNode
      * @param null $with
      *
      * @return AbstractCollection
@@ -75,7 +91,7 @@ class Node extends XFCP_Node
         $nodes = \array_values($nodes);
         $nodeCount = count($nodes);
 
-        /** @var \XF\Entity\Node[] $nodes */
+        /** @var NodeEntity[] $nodes */
         foreach ($nodes as $node)
         {
             $nodeId = $node->node_id;
@@ -107,7 +123,7 @@ class Node extends XFCP_Node
                         $this->shimmedProxyNodes = true;
                         $fakeNodeId = '_' . $realForumId;
                         // create a fake node
-                        /** @var \XF\Entity\Node $fakeNode */
+                        /** @var NodeEntity $fakeNode */
                         $fakeNode = $em->create('XF:Node');
                         $fakeNode->setTrusted('node_id', $fakeNodeId);
                         $fakeNode->setTrusted('parent_node_id', $nodeId);
