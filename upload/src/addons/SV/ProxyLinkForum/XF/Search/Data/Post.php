@@ -16,9 +16,6 @@ class Post extends XFCP_Post
      */
     protected $armSearchNodeHacks = false;
 
-    /** @var bool */
-    protected $shimmedProxyNodes = false;
-
     /**
      * @deprecated Since 2.1.5
      *
@@ -35,6 +32,7 @@ class Post extends XFCP_Post
 
     /**
      * @return \XF\Tree
+     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getSearchableNodeTree()
     {
@@ -102,7 +100,6 @@ class Post extends XFCP_Post
 
     public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
     {
-        $this->shimmedProxyNodes = false;
         $searchNodeRoots = $this->searchNodeRoots ?? $request->filter('c.nodes', 'array-uint');
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
                                     ($searchNodeRoots && reset($searchNodeRoots)) &&
@@ -110,6 +107,7 @@ class Post extends XFCP_Post
 
         /** @var ExtendedNodeRepo $nodeRepo */
         $nodeRepo = \XF::repository('XF:Node');
+        $nodeRepo->shimmedProxyNodes = false;
         $structure = \XF::em()->getEntityStructure('XF:LinkForum');
         if ($this->armSearchNodeHacks && ($structure->relations['ProxiedForum'] ?? false))
         {
@@ -120,7 +118,7 @@ class Post extends XFCP_Post
         {
             parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
-            if ($this->armSearchNodeHacks && $this->shimmedProxyNodes)
+            if ($this->armSearchNodeHacks && ($nodeRepo->shimmedProxyNodes ?? false))
             {
                 $constraints = $query->getMetadataConstraints();
                 foreach ($constraints as $constraint)
@@ -134,7 +132,7 @@ class Post extends XFCP_Post
         }
         finally
         {
-            $this->shimmedProxyNodes = false;
+            $nodeRepo->shimmedProxyNodes = false;
             $this->armSearchNodeHacks = false;
 
             $nodeRepo->clearInjectProxiedSubNodesForSvProxyLinkForum('getFullNodeListWithTypeData');

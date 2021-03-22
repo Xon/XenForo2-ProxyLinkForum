@@ -1,16 +1,12 @@
 <?php
+/**
+ * @noinspection PhpMissingReturnTypeInspection
+ */
 
 namespace SV\ProxyLinkForum\XF\Repository;
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
-use XF\App as BaseApp;
 use XF\Mvc\Entity\AbstractCollection;
-use XF\Mvc\Entity\Finder;
-use XF\Mvc\Entity\Entity;
-use XF\Mvc\Entity\Repository;
-use XF\Service\AbstractService;
-use XF\Mvc\Entity\Manager as EntityManager;
-use XF\Job\Manager as JobManager;
 use XF\Entity\Node as NodeEntity;
 
 /**
@@ -18,6 +14,9 @@ use XF\Entity\Node as NodeEntity;
  */
 class Node extends XFCP_Node
 {
+    /** @var bool */
+    public $shimmedProxyNodes = false;
+
     protected $injectProxiedSubNodesForSvProxyLinkForum = [];
 
     public function setInjectProxiedSubNodesForSvProxyLinkForum(
