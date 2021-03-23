@@ -118,7 +118,7 @@ class Post extends XFCP_Post
         {
             parent::applyTypeConstraintsFromInput($query, $request, $urlConstraints);
 
-            if ($this->armSearchNodeHacks && ($nodeRepo->shimmedProxyNodes ?? false))
+            if ($nodeRepo->shimmedProxyNodes ?? false)
             {
                 $constraints = $query->getMetadataConstraints();
                 foreach ($constraints as $constraint)
