@@ -19,23 +19,17 @@ class Node extends XFCP_Node
 
     protected $injectProxiedSubNodesForSvProxyLinkForum = [];
 
-    public function setInjectProxiedSubNodesForSvProxyLinkForum(
-        string $listMethodName
-    )
+    public function setInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName)
     {
         $this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName] = true;
     }
 
-    public function clearInjectProxiedSubNodesForSvProxyLinkForum(
-        string $listMethodName
-    )
+    public function clearInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName)
     {
         unset($this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName]);
     }
 
-    public function isInjectingProxiedSubNodesForSvProxyLinkForum(
-        string $listMethodName
-    ) : bool
+    public function isInjectingProxiedSubNodesForSvProxyLinkForum(string $listMethodName): bool
     {
         return $this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName] ?? false;
     }
@@ -58,18 +52,12 @@ class Node extends XFCP_Node
 
     /**
      * @param NodeEntity|null $withinNode
-     * @param null $with
-     *
+     * @param null            $with
      * @return AbstractCollection
      */
-    public function getFullNodeListWithTypeData(
-        NodeEntity $withinNode = null,
-        $with = null)
+    public function getFullNodeListWithTypeData(NodeEntity $withinNode = null, $with = null)
     {
-        $nodeList = parent::getFullNodeListWithTypeData(
-            $withinNode,
-            $with
-        );
+        $nodeList = parent::getFullNodeListWithTypeData($withinNode, $with);
 
         if ($this->isInjectingProxiedSubNodesForSvProxyLinkForum(__FUNCTION__))
         {
@@ -79,9 +67,7 @@ class Node extends XFCP_Node
         return $nodeList;
     }
 
-    public function injectProxiedSubNodesForSvProxyLinkForum(
-        AbstractCollection $nodes
-    ): AbstractCollection
+    public function injectProxiedSubNodesForSvProxyLinkForum(AbstractCollection $nodes): AbstractCollection
     {
         $shimmedNodes = [];
         $em = \XF::em();
