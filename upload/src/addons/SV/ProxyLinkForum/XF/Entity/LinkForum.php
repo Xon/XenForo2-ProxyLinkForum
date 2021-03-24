@@ -18,9 +18,9 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
-        $output = [];
         if ($proxiedForum && $proxiedForum->canView())
         {
+            $output = $proxiedForum->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedForum;
             return $output;
         }
@@ -28,6 +28,7 @@ class LinkForum extends XFCP_LinkForum
         $proxiedCategory = $this->ProxiedCategory;
         if ($proxiedCategory && $proxiedCategory->canView())
         {
+            $output = $proxiedCategory->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedCategory;
             return $output;
         }
