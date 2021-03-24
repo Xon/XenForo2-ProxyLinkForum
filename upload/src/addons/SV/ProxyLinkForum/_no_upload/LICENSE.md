@@ -1,6 +1,7 @@
 The MIT License (MIT)
 
-Copyright (c) 2017-2020 Xon
+Copyright (c) 2017-2021 Xon
+Copyright (c) 2021 Audentio, LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
