@@ -9,6 +9,10 @@
     "faq_url": "",
     "support_url": "https://xenforo.com/community/resources/proxy-link-forum.5845/",
     "extra_urls": [],
+    "require" : {
+      "XF": [2010070, "XenForo 2.1.0+"],
+      "php": ["7.0.0", "PHP 7.0.0+"],
+      "SV/StandardLib": [1000000,"Standard Library by Xon v1.0.0+"]
     },
     "icon": "fa-link"
 }
