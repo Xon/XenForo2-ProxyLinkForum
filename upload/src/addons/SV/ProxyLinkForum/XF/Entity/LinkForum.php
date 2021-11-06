@@ -1,4 +1,7 @@
 <?php
+/**
+ * @noinspection PhpMissingReturnTypeInspection
+ */
 
 namespace SV\ProxyLinkForum\XF\Entity;
 
@@ -14,7 +17,9 @@ use XF\Mvc\Entity\Structure;
  */
 class LinkForum extends XFCP_LinkForum
 {
-    /** @noinspection PhpMissingReturnTypeInspection */
+    /**
+     * @return array|bool[]
+     */
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
@@ -36,7 +41,9 @@ class LinkForum extends XFCP_LinkForum
         return parent::getNodeListExtras();
     }
 
-    /** @noinspection PhpMissingReturnTypeInspection */
+    /**
+     * @return string[]
+     */
     public static function getListedWith()
     {
         $visitor = \XF::visitor();
@@ -52,7 +59,10 @@ class LinkForum extends XFCP_LinkForum
         return $with;
     }
 
-    /** @noinspection PhpMissingReturnTypeInspection */
+    /**
+     * @param int $depth
+     * @return string[]
+     */
     public function getNodeTemplateRenderer($depth)
     {
         $proxiedForum = $this->ProxiedForum;
@@ -77,7 +87,6 @@ class LinkForum extends XFCP_LinkForum
 
     /**
      * @return \XF\Entity\Forum|null
-     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getProxiedForum()
     {
@@ -91,7 +100,6 @@ class LinkForum extends XFCP_LinkForum
 
     /**
      * @return \XF\Entity\Category|null
-     * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getProxiedCategory()
     {
@@ -121,7 +129,10 @@ class LinkForum extends XFCP_LinkForum
         parent::_preSave();
     }
 
-    /** @noinspection PhpMissingReturnTypeInspection */
+    /**
+     * @param Structure $structure
+     * @return Structure
+     */
     public static function getStructure(Structure $structure)
     {
         $structure = parent::getStructure($structure);

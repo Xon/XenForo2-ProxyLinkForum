@@ -114,6 +114,7 @@ class Node extends XFCP_Node
                         $fakeNode->setTrusted('parent_node_id', $nodeId);
                         $fakeNode->setTrusted('node_type_id', 'Forum');
                         $fakeNode->setTrusted('display_in_list', $childNode->display_in_list);
+                        /** @var $childNode \SV\AggregatingForums\XF\Entity\Node */
                         if ($childNode->isValidColumn('sv_aggregate_default'))
                         {
                             $fakeNode->setTrusted('sv_aggregate_allowed', $childNode->sv_aggregate_allowed);

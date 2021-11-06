@@ -17,6 +17,7 @@ class Post extends XFCP_Post
     protected $armSearchNodeHacks = false;
 
     /**
+     * Pre-XF2.2.4 compat
      * @deprecated Since 2.1.5
      *
      * @param AbstractCollection $nodes
