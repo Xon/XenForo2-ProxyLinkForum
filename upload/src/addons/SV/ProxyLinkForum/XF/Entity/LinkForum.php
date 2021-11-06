@@ -41,17 +41,12 @@ class LinkForum extends XFCP_LinkForum
     {
         $visitor = \XF::visitor();
         $userId = $visitor->user_id;
-        $isXF21 = \XF::$versionId > 2010070;
-        $with = $isXF21 ? ['ProxiedForum.LastPostUser', 'ProxiedForum.LastThread'] : [];
-        $with = array_merge($with, ['ProxiedForum', 'ProxiedForum.Node', 'ProxiedCategory', 'ProxiedCategory.Node']);
+        $with = ['ProxiedForum.LastPostUser', 'ProxiedForum.LastThread', 'ProxiedForum', 'ProxiedForum.Node', 'ProxiedCategory', 'ProxiedCategory.Node'];
 
         if ($userId)
         {
-            $with[] = "ProxiedForum.Read|{$userId}";
-            if ($isXF21)
-            {
-                $with[] = "ProxiedForum.LastThread.Read|{$userId}";
-            }
+            $with[] = 'ProxiedForum.Read|' . $userId;
+            $with[] = 'ProxiedForum.LastThread.Read|' . $userId;
         }
 
         return $with;
