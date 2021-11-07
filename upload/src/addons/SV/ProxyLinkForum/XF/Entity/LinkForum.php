@@ -9,11 +9,18 @@ use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
 
 /**
- * @property \XF\Entity\Forum ProxiedForum
- * @property \XF\Entity\Forum ProxiedForum_
- * @property \XF\Entity\Category ProxiedCategory
- * @property \XF\Entity\Category ProxiedCategory_
+ * COLUMNS
  * @property int|null sv_proxy_node_id
+ *
+ * GETTERS
+ * @property \XF\Entity\Node ProxiedNode
+ * @property \XF\Entity\Forum ProxiedForum
+ * @property \XF\Entity\Category ProxiedCategory
+ *
+ * RELATIONS
+ * @property \XF\Entity\Node ProxiedNode_
+ * @property \XF\Entity\Forum ProxiedForum_
+ * @property \XF\Entity\Category ProxiedCategory_
  */
 class LinkForum extends XFCP_LinkForum
 {
@@ -111,6 +118,19 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedCategory_;
     }
 
+    /**
+     * @return \XF\Entity\Node|null
+     */
+    protected function getProxiedNode()
+    {
+        if (!$this->sv_proxy_node_id)
+        {
+            return null;
+        }
+
+        return $this->ProxiedNode_;
+    }
+
     protected function _preSave()
     {
         $proxiedForum = $this->ProxiedForum;
@@ -153,9 +173,16 @@ class LinkForum extends XFCP_LinkForum
             'defaultWith' => 'node',
             'primary'     => true
         ];
+        $structure->relations['ProxiedNode'] = [
+            'entity'      => 'XF:Node',
+            'type'        => Entity::TO_ONE,
+            'conditions'  => [['node_id', '=', '$sv_proxy_node_id']],
+            'primary'     => true
+        ];
 
         $structure->getters['ProxiedForum'] = ['getter' => 'getProxiedForum', 'cache' => false];
         $structure->getters['ProxiedCategory'] = ['getter' => 'getProxiedCategory', 'cache' => false];
+        $structure->getters['ProxiedNode'] = ['getter' => 'getProxiedNode', 'cache' => false];
 
         return $structure;
     }
