@@ -28,6 +28,15 @@ class Setup extends AbstractSetup
         $this->installStep1();
     }
 
+    public function upgrade2020200Step1()
+    {
+        $this->db()->query('
+            UPDATE xf_link_forum 
+            SET sv_proxy_node_id = NULL 
+            WHERE sv_proxy_node_id = 0
+        ');
+    }
+
     public function uninstallStep1()
     {
         $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {

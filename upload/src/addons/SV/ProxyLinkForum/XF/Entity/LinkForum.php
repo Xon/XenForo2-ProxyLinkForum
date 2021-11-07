@@ -97,7 +97,7 @@ class LinkForum extends XFCP_LinkForum
      */
     protected function getProxiedForum()
     {
-        if (!$this->sv_proxy_node_id)
+        if ($this->sv_proxy_node_id === null)
         {
             return null;
         }
@@ -110,7 +110,7 @@ class LinkForum extends XFCP_LinkForum
      */
     protected function getProxiedCategory()
     {
-        if (!$this->sv_proxy_node_id)
+        if ($this->sv_proxy_node_id === null)
         {
             return null;
         }
@@ -123,7 +123,7 @@ class LinkForum extends XFCP_LinkForum
      */
     protected function getProxiedNode()
     {
-        if (!$this->sv_proxy_node_id)
+        if ($this->sv_proxy_node_id === null)
         {
             return null;
         }
@@ -133,6 +133,11 @@ class LinkForum extends XFCP_LinkForum
 
     protected function _preSave()
     {
+        if ($this->sv_proxy_node_id === 0)
+        {
+            $this->sv_proxy_node_id = null;
+        }
+
         $proxiedForum = $this->ProxiedForum;
         if ($proxiedForum && !$this->link_url)
         {
