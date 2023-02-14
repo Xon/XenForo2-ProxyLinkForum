@@ -17,21 +17,6 @@ class Post extends XFCP_Post
     protected $armSearchNodeHacks = false;
 
     /**
-     * Pre-XF2.2.4 compat
-     * @deprecated Since 2.1.5
-     *
-     * @param AbstractCollection $nodes
-     *
-     * @return AbstractCollection
-     */
-    protected function injectProxiedSubNodes(AbstractCollection $nodes): AbstractCollection
-    {
-        /** @var ExtendedNodeRepo $nodeRepo */
-        $nodeRepo = \XF::repository('XF:Node');
-        return $nodeRepo->injectProxiedSubNodesForSvProxyLinkForum($nodes);
-    }
-
-    /**
      * @return \XF\Tree
      * @noinspection PhpMissingReturnTypeInspection
      */

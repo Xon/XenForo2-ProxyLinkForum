@@ -16,19 +16,19 @@ class Setup extends AbstractSetup
     use StepRunnerUpgradeTrait;
     use StepRunnerUninstallTrait;
 
-    public function installStep1()
+    public function installStep1(): void
     {
         $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {
             $this->addOrChangeColumn($table, 'sv_proxy_node_id', 'int')->nullable()->setDefault(null);
         });
     }
 
-    public function upgrade2000501Step1()
+    public function upgrade2000501Step1(): void
     {
         $this->installStep1();
     }
 
-    public function upgrade2020200Step1()
+    public function upgrade2020200Step1(): void
     {
         $this->db()->query('
             UPDATE xf_link_forum 
@@ -37,7 +37,7 @@ class Setup extends AbstractSetup
         ');
     }
 
-    public function uninstallStep1()
+    public function uninstallStep1(): void
     {
         $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {
             $table->dropColumns(['sv_proxy_node_id']);

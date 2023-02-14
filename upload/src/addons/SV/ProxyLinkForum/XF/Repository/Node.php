@@ -17,14 +17,15 @@ class Node extends XFCP_Node
     /** @var bool */
     public $shimmedProxyNodes = false;
 
+    /** @var array<string,bool> */
     protected $injectProxiedSubNodesForSvProxyLinkForum = [];
 
-    public function setInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName)
+    public function setInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName): void
     {
         $this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName] = true;
     }
 
-    public function clearInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName)
+    public function clearInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName): void
     {
         unset($this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName]);
     }
