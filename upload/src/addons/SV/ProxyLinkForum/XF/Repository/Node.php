@@ -120,16 +120,32 @@ class Node extends XFCP_Node
             {
                 /** @var ExtendedLinkForumEntity $linkForum */
                 $linkForum = $node->Data;
-                $realForum = $linkForum->ProxiedForum;
-                if (!$realForum || !$realForum->canView())
+                if ($realForum = $linkForum->ProxiedForum)
+                {
+                    if (!$realForum->canView())
+                    {
+                        continue;
+                    }
+                    $realNode = $realForum->Node;
+                    $realData = $realForum;
+                }
+                else if ($realCategory = $linkForum->ProxiedCategory)
+                {
+                    if (!$realCategory->canView())
+                    {
+                        continue;
+                    }
+                    $realNode = $realCategory->Node;
+                    $realData = $realCategory;
+                }
+                else
                 {
                     // don't bother including non-proxy link forum nodes
                     continue;
                 }
 
                 $this->shimmedProxyNodes = true;
-                $realNode = $realForum->Node;
-                $linkedForum = $this->cloneAsFake($realNode, $realForum, $node->Parent);
+                $linkedForum = $this->cloneAsFake($realNode, $realData, $node->Parent);
                 $shimmedNodes[$linkedForum->node_id] = $linkedForum;
 
                 // generate fake nodes for any child-nodes of the target
