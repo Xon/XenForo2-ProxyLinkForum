@@ -10,17 +10,17 @@ use XF\Mvc\Entity\Structure;
 
 /**
  * COLUMNS
- * @property int|null sv_proxy_node_id
+ * @property int|null $sv_proxy_node_id
  *
  * GETTERS
- * @property \XF\Entity\Node ProxiedNode
- * @property \XF\Entity\Forum ProxiedForum
- * @property \XF\Entity\Category ProxiedCategory
+ * @property-read \XF\Entity\Node $ProxiedNode
+ * @property-read \XF\Entity\Forum $ProxiedForum
+ * @property-read \XF\Entity\Category $ProxiedCategory
  *
  * RELATIONS
- * @property \XF\Entity\Node ProxiedNode_
- * @property \XF\Entity\Forum ProxiedForum_
- * @property \XF\Entity\Category ProxiedCategory_
+ * @property-read \XF\Entity\Node $ProxiedNode_
+ * @property-read \XF\Entity\Forum $ProxiedForum_
+ * @property-read \XF\Entity\Category $ProxiedCategory_
  */
 class LinkForum extends XFCP_LinkForum
 {
