@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Entity\\Node",
+    "to_class": "SV\\ProxyLinkForum\\XF\\Entity\\Node",
+    "execute_order": 5845,
+    "active": true
+}

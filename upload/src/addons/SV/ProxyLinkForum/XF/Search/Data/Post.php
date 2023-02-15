@@ -3,8 +3,9 @@
 namespace SV\ProxyLinkForum\XF\Search\Data;
 
 use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
-use XF\Mvc\Entity\AbstractCollection;
 use XF\Search\Query\MetadataConstraint;
+use function is_string;
+use function reset;
 
 /**
  * Extends \XF\Search\Data\Post
@@ -17,6 +18,25 @@ class Post extends XFCP_Post
     protected $armSearchNodeHacks = false;
 
     /**
+     * @return array
+     * @noinspection PhpMissingReturnTypeInspection
+     */
+    public function getSearchFormData()
+    {
+        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
+        $this->armSearchNodeHacks = $structure->relations['ProxiedForum'] ?? false;
+        try
+        {
+            return parent::getSearchFormData();
+        }
+        finally
+        {
+            $this->armSearchNodeHacks = false;
+
+        }
+    }
+
+    /**
      * @return \XF\Tree
      * @noinspection PhpMissingReturnTypeInspection
      */
@@ -24,10 +44,8 @@ class Post extends XFCP_Post
     {
         /** @var ExtendedNodeRepo $nodeRepo */
         $nodeRepo = \XF::repository('XF:Node');
-        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
-        $hasProxyForum = $structure->relations['ProxiedForum'] ?? false;
 
-        if ($this->armSearchNodeHacks && $hasProxyForum)
+        if ($this->armSearchNodeHacks)
         {
             $nodeRepo->setInjectProxiedSubNodesForSvProxyLinkForum('getNodeList');
         }
@@ -50,20 +68,17 @@ class Post extends XFCP_Post
         $nodeIds = $constraint->getValues();
         foreach ($nodeIds as $nodeId)
         {
+            if (is_string($nodeId) && $nodeId[0] === '_')
+            {
+                // patch nodes with '_' ids, these are pseudo-forums under the existing parent
+                // proxied forums are automatically children of the search node roots, so they should always be included
+                $change = true;
+                $nodeId = (int)\substr($nodeId, 1);
+            }
+
             /** @var \XF\Entity\Node $node */
             $node = $em->findCached('XF:Node', $nodeId);
-            if (!$node)
-            {
-                if (is_string($nodeId) && $nodeId[0] === '_')
-                {
-                    // patch nodes with '_' ids, these are pseudo-forums under the existing parent
-                    // proxied forums are automatically children of the search node roots, so they should always be included
-                    $change = true;
-                    $nodeId = (int)\substr($nodeId, 1);
-                }
-                $shimmedNodeIds[$nodeId] = $nodeId;
-            }
-            else if ($node->node_type_id === 'LinkForum')
+            if (!$node || $node->node_type_id === 'LinkForum')
             {
                 // A link-proxy which is not a proxy forum, skip
                 $change = true;

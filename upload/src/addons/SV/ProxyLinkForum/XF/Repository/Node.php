@@ -6,8 +6,12 @@
 namespace SV\ProxyLinkForum\XF\Repository;
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
+use XF\Entity\AbstractNode;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Entity\Node as NodeEntity;
+use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
+use function assert;
+use function count;
 
 /**
  * @since 2.1.5
@@ -68,11 +72,42 @@ class Node extends XFCP_Node
         return $nodeList;
     }
 
+    /**
+     * @param NodeEntity   $node
+     * @param AbstractNode $data
+     * @param NodeEntity   $parent
+     * @return NodeEntity
+     */
+    protected function cloneAsFake(NodeEntity $node, AbstractNode $data, ?NodeEntity $parent): NodeEntity
+    {
+        // copy the attributes, except for overrides
+        $arr = [
+            'node_id'        => '_' . $node->node_id,
+            'parent_node_id' => $parent->node_id ?? 0,
+            'node_type_id'   => 'Forum',
+        ];
+
+        foreach ($node->structure()->columns as $key => $null)
+        {
+            if (isset($arr[$key]))
+            {
+                continue;
+            }
+            $arr[$key] = $node->getValueSourceEncoded($key);
+        }
+        // create the fake node & setup relationships
+        $fakeNode = $this->app()->em()->instantiateEntity('XF:Node', $arr);
+        assert($fakeNode instanceof ExtendedNodeEntity);
+        $fakeNode->hydrateRelation('Parent', $parent);
+        $fakeNode->setData($data);
+        $fakeNode->setReadOnly(true);
+
+        return $fakeNode;
+    }
+
     public function injectProxiedSubNodesForSvProxyLinkForum(AbstractCollection $nodes): AbstractCollection
     {
         $shimmedNodes = [];
-        $em = \XF::em();
-
         $nodes = $nodes->toArray();
         $nodes = \array_values($nodes);
         $nodeCount = count($nodes);
@@ -91,13 +126,15 @@ class Node extends XFCP_Node
                     // don't bother including non-proxy link forum nodes
                     continue;
                 }
-                $realForumId = $linkForum->sv_proxy_node_id;
-                $shimmedNodes[$nodeId] = $node;
-                // generate fake nodes for any child-nodes of the target
+
+                $this->shimmedProxyNodes = true;
                 $realNode = $realForum->Node;
+                $linkedForum = $this->cloneAsFake($realNode, $realForum, $node->Parent);
+                $shimmedNodes[$linkedForum->node_id] = $linkedForum;
+
+                // generate fake nodes for any child-nodes of the target
                 $lft = $realNode->lft;
                 $rgt = $realNode->rgt;
-
                 for ($i = 0; $i < $nodeCount; $i++)
                 {
                     $childNode = $nodes[$i];
@@ -106,24 +143,9 @@ class Node extends XFCP_Node
                         $childNode->rgt <= $rgt &&
                         $childNode->node_type_id === 'Forum')
                     {
-                        $this->shimmedProxyNodes = true;
-                        $fakeNodeId = '_' . $realForumId;
-                        // create a fake node
-                        /** @var NodeEntity $fakeNode */
-                        $fakeNode = $em->create('XF:Node');
-                        $fakeNode->setTrusted('node_id', $fakeNodeId);
-                        $fakeNode->setTrusted('parent_node_id', $nodeId);
-                        $fakeNode->setTrusted('node_type_id', 'Forum');
-                        $fakeNode->setTrusted('display_in_list', $childNode->display_in_list);
-                        /** @var $childNode \SV\AggregatingForums\XF\Entity\Node */
-                        if ($childNode->isValidColumn('sv_aggregate_default'))
-                        {
-                            $fakeNode->setTrusted('sv_aggregate_allowed', $childNode->sv_aggregate_allowed);
-                            $fakeNode->setTrusted('sv_aggregate_default', $childNode->sv_aggregate_default);
-                        }
-                        $fakeNode->hydrateRelation('Parent', $node);
+                        $fakeNode = $this->cloneAsFake($childNode, $childNode->Data, $linkedForum);
 
-                        $shimmedNodes[$fakeNodeId] = $fakeNode;
+                        $shimmedNodes[$fakeNode->node_id] = $fakeNode;
                     }
                 }
 
@@ -133,6 +155,6 @@ class Node extends XFCP_Node
             $shimmedNodes[$nodeId] = $node;
         }
 
-        return $em->getBasicCollection($shimmedNodes);
+        return $this->app()->em()->getBasicCollection($shimmedNodes);
     }
 }

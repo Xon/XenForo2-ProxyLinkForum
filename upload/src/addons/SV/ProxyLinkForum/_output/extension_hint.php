@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpIllegalPsrClassPathInspection */
 // ################## THIS IS A GENERATED FILE ##################
 // DO NOT EDIT DIRECTLY. EDIT THE CLASS EXTENSIONS IN THE CONTROL PANEL.
 
@@ -11,6 +12,7 @@ namespace SV\ProxyLinkForum\XF\Admin\Controller
 namespace SV\ProxyLinkForum\XF\Entity
 {
 	class XFCP_LinkForum extends \XF\Entity\LinkForum {}
+	class XFCP_Node extends \XF\Entity\Node {}
 }
 
 namespace SV\ProxyLinkForum\XF\Repository
