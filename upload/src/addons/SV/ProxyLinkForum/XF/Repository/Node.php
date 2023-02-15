@@ -120,6 +120,10 @@ class Node extends XFCP_Node
             {
                 /** @var ExtendedLinkForumEntity $linkForum */
                 $linkForum = $node->Data;
+                if (!($linkForum->sv_proxy_search ?? false))
+                {
+                    continue;
+                }
                 if ($realForum = $linkForum->ProxiedForum)
                 {
                     if (!$realForum->canView())

@@ -19,6 +19,7 @@ class Setup extends AbstractSetup
     public function installStep1(): void
     {
         $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {
+            $this->addOrChangeColumn($table, 'sv_proxy_search', 'tinyint')->setDefault(1);
             $this->addOrChangeColumn($table, 'sv_proxy_node_id', 'int')->nullable()->setDefault(null);
         });
     }
@@ -37,10 +38,18 @@ class Setup extends AbstractSetup
         ');
     }
 
+    public function upgrade2030000Step1(): void
+    {
+        $this->installStep1();
+    }
+
     public function uninstallStep1(): void
     {
-        $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table) {
-            $table->dropColumns(['sv_proxy_node_id']);
+        $this->schemaManager()->alterTable('xf_link_forum', function (Alter $table): void {
+            $table->dropColumns([
+                'sv_proxy_node_id',
+                'sv_proxy_search',
+            ]);
         });
     }
 }

@@ -19,7 +19,8 @@ class LinkForum extends XFCP_LinkForum
     {
         parent::saveTypeData($form, $node, $data);
 
-        $proxyNodeId = $this->filter('sv_proxy_node_id', 'uint');
-        $data->set('sv_proxy_node_id', $proxyNodeId);
+        assert($data instanceof \SV\ProxyLinkForum\XF\Entity\LinkForum);
+        $data->sv_proxy_node_id = (int)$this->filter('sv_proxy_node_id', 'uint');
+        $data->sv_proxy_search = (bool)$this->filter('sv_proxy_search', 'bool');
     }
 }

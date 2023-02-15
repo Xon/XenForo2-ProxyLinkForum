@@ -11,6 +11,7 @@ use XF\Mvc\Entity\Structure;
 /**
  * COLUMNS
  * @property int|null $sv_proxy_node_id
+ * @property bool $sv_proxy_search
  *
  * GETTERS
  * @property-read \XF\Entity\Node $ProxiedNode
@@ -163,6 +164,7 @@ class LinkForum extends XFCP_LinkForum
         $structure = parent::getStructure($structure);
 
         $structure->columns['sv_proxy_node_id'] = ['type' => Entity::UINT, 'nullable' => true, 'default' => null];
+        $structure->columns['sv_proxy_search'] = ['type' => Entity::BOOL, 'default' => true];
 
         $structure->relations['ProxiedForum'] = [
             'entity'      => 'XF:Forum',
