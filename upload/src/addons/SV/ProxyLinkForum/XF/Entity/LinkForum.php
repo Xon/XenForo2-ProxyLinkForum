@@ -25,6 +25,49 @@ use XF\Mvc\Entity\Structure;
  */
 class LinkForum extends XFCP_LinkForum
 {
+    protected function addChildExtras(array $output,\XF\Entity\Node $node)
+    {
+        // has children, fetch stats for them
+        if ($node->lft >= $node->rgt)
+        {
+            return $output;
+        }
+
+        /** @var \SV\ProxyLinkForum\XF\Repository\Node $repo */
+        $repo = $this->repository('XF:Node');
+        $tree = $repo->svLinkForumsNodeTree ?? null;
+        if ($tree === null)
+        {
+            return $output;
+        }
+
+        // avoid recursion
+        $nodeId = $node->node_id;
+        if (isset($repo->svLinkForumNodesSeen[$nodeId]))
+        {
+            return $output;
+        }
+        $repo->svLinkForumNodesSeen[$nodeId] = true;
+
+
+        $f = function(\XF\Entity\Node $node, array $children) use ($repo, &$f, &$finalOutput)
+        {
+            $childOutput = [];
+            foreach ($children AS $id => $child)
+            {
+                /** @var \XF\SubTree $child */
+                $childOutput[$id] = $f($child->record, $child->children());
+            }
+
+            return $repo->mergeNodeListExtras($node->getNodeListExtras(), $childOutput);
+        };
+
+        $childOutput = [$f($node, $tree->children($nodeId))];
+        $output = $repo->mergeNodeListExtras($output, $childOutput);
+
+        return $output;
+    }
+
     /**
      * @return array|bool[]
      */
@@ -35,7 +78,7 @@ class LinkForum extends XFCP_LinkForum
         {
             $output = $proxiedForum->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedForum;
-            return $output;
+            return $this->addChildExtras($output, $proxiedForum->Node);
         }
 
         $proxiedCategory = $this->ProxiedCategory;
@@ -43,7 +86,7 @@ class LinkForum extends XFCP_LinkForum
         {
             $output = $proxiedCategory->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedCategory;
-            return $output;
+            return $this->addChildExtras($output, $proxiedCategory->Node);
         }
 
         return parent::getNodeListExtras();

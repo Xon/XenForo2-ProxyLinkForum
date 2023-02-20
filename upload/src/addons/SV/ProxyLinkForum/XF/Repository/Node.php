@@ -24,6 +24,11 @@ class Node extends XFCP_Node
     /** @var array<string,bool> */
     protected $injectProxiedSubNodesForSvProxyLinkForum = [];
 
+    /** @var \XF\Tree|null */
+    public $svLinkForumsNodeTree;
+    /** @var array<int,bool> */
+    public $svLinkForumNodesSeen = [];
+
     public function setInjectProxiedSubNodesForSvProxyLinkForum(string $listMethodName): void
     {
         $this->injectProxiedSubNodesForSvProxyLinkForum[$listMethodName] = true;
@@ -176,5 +181,20 @@ class Node extends XFCP_Node
         }
 
         return $this->app()->em()->getBasicCollection($shimmedNodes);
+    }
+
+    public function getNodeListExtras(\XF\Tree $nodeTree)
+    {
+        $this->svLinkForumsNodeTree = $nodeTree;
+        $this->svLinkForumNodesSeen = [];
+        try
+        {
+            return parent::getNodeListExtras($nodeTree);
+        }
+        finally
+        {
+            $this->svLinkForumsNodeTree = null;
+            $this->svLinkForumNodesSeen = [];
+        }
     }
 }
