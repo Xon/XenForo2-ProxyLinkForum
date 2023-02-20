@@ -1,9 +1,0 @@
-{
-    "template": "node_list_category",
-    "description": "Patch icon",
-    "execution_order": 10,
-    "enabled": true,
-    "action": "str_replace",
-    "find": "$node.Data.TypeHandler.getTypeIconClass()",
-    "replace": "($extras.ProxiedNode ? $extras.ProxiedNode.TypeHandler.getTypeIconClass() : $node.Data.TypeHandler.getTypeIconClass())"
-}
