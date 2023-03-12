@@ -46,16 +46,28 @@ class Setup extends AbstractSetup
 
     public function upgrade2040000Step1(): void
     {
-        /** @var LinkForum[] $linkForums */
-        $linkForums = \XF::app()->finder('XF:LinkForum')
-                         ->where('sv_proxy_node_id', '<>', null)
-                         ->fetch();
         $db = $this->db();
         $db->beginTransaction();
-        foreach ($linkForums as $linkForum)
-        {
-            $linkForum->purgePermissions();
-        }
+        $db->query('
+            DELETE
+            FROM xf_permission_entry_content 
+            WHERE content_type = \'node\'
+                  AND content_id IN (
+                    SELECT node_id
+                    FROM xf_link_forum
+                    WHERE xf_link_forum.sv_proxy_node_id IS NOT NULL
+                  )
+        ');
+        $db->query('
+            DELETE
+            FROM xf_permission_cache_content 
+            WHERE content_type = \'node\'
+                  AND content_id IN (
+                    SELECT node_id
+                    FROM xf_link_forum
+                    WHERE xf_link_forum.sv_proxy_node_id IS NOT NULL
+                  )
+        ');
         $db->commit();
     }
 
