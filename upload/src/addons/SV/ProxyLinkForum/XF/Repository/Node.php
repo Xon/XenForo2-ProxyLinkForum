@@ -10,6 +10,7 @@ use XF\Entity\AbstractNode;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Entity\Node as NodeEntity;
 use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
+use function array_key_exists;
 use function array_values;
 use function assert;
 use function count;
@@ -95,7 +96,7 @@ class Node extends XFCP_Node
 
         foreach ($node->structure()->columns as $key => $null)
         {
-            if (isset($arr[$key]))
+            if (array_key_exists($key, $arr))
             {
                 continue;
             }
@@ -124,7 +125,7 @@ class Node extends XFCP_Node
             $nodeId = $node->node_id;
             if ($node->node_type_id === 'LinkForum')
             {
-                /** @var ExtendedLinkForumEntity $linkForum */
+                /** @var ExtendedLinkForumEntity|null $linkForum */
                 $linkForum = $node->Data;
                 if (!($linkForum->sv_proxy_search ?? false))
                 {

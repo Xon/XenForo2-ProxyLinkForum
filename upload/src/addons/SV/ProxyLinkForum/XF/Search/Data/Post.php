@@ -78,7 +78,7 @@ class Post extends XFCP_Post
                 $nodeId = (int)substr($nodeId, 1);
             }
 
-            /** @var \XF\Entity\Node $node */
+            /** @var \XF\Entity\Node|false $node */
             $node = $em->findCached('XF:Node', $nodeId);
             if (!$node || $node->node_type_id === 'LinkForum')
             {

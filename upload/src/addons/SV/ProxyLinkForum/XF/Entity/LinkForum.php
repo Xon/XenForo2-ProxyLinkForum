@@ -51,10 +51,9 @@ class LinkForum extends XFCP_LinkForum
         $repo->svLinkForumNodesSeen[$nodeId] = true;
 
 
-        $f = function(\XF\Entity\Node $node, array $children) use ($repo, &$f, &$finalOutput)
-        {
+        $f = function (\XF\Entity\Node $node, array $children) use ($repo, &$f, &$finalOutput) {
             $childOutput = [];
-            foreach ($children AS $id => $child)
+            foreach ($children as $id => $child)
             {
                 /** @var \XF\SubTree $child */
                 $childOutput[$id] = $f($child->record, $child->children());
@@ -75,18 +74,20 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum && $proxiedForum->canView())
+        if ($proxiedForum !== null && $proxiedForum->canView())
         {
             $output = $proxiedForum->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedForum;
+
             return $this->addChildExtras($output, $proxiedForum->Node);
         }
 
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory && $proxiedCategory->canView())
+        if ($proxiedCategory !== null && $proxiedCategory->canView())
         {
             $output = $proxiedCategory->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedCategory;
+
             return $this->addChildExtras($output, $proxiedCategory->Node);
         }
 
@@ -122,7 +123,8 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeTemplateRenderer($depth)
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum && $proxiedForum->canView()) {
+        if ($proxiedForum !== null && $proxiedForum->canView())
+        {
             return [
                 'template' => 'node_list_forum',
                 'macro'    => $depth <= 2 ? 'depth' . $depth : 'depthN'
@@ -130,7 +132,8 @@ class LinkForum extends XFCP_LinkForum
         }
 
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory && $proxiedCategory->canView()) {
+        if ($proxiedCategory !== null && $proxiedCategory->canView())
+        {
             return [
                 'template' => 'node_list_category',
                 'macro'    => $depth <= 2 ? 'depth' . $depth : 'depthN'
@@ -140,11 +143,7 @@ class LinkForum extends XFCP_LinkForum
         return parent::getNodeTemplateRenderer($depth);
     }
 
-
-    /**
-     * @return \XF\Entity\Forum|null
-     */
-    protected function getProxiedForum()
+    protected function getProxiedForum(): ?\XF\Entity\Forum
     {
         if ($this->sv_proxy_node_id === null)
         {
@@ -154,10 +153,7 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedForum_;
     }
 
-    /**
-     * @return \XF\Entity\Category|null
-     */
-    protected function getProxiedCategory()
+    protected function getProxiedCategory(): ?\XF\Entity\Category
     {
         if ($this->sv_proxy_node_id === null)
         {
@@ -167,10 +163,7 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedCategory_;
     }
 
-    /**
-     * @return \XF\Entity\Node|null
-     */
-    protected function getProxiedNode()
+    protected function getProxiedNode(): ?\XF\Entity\Node
     {
         if ($this->sv_proxy_node_id === null)
         {
@@ -188,14 +181,13 @@ class LinkForum extends XFCP_LinkForum
         }
 
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum && !$this->link_url)
+        if ($proxiedForum !== null && $this->link_url !== '')
         {
             $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $proxiedForum);
         }
 
-
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory && !$this->link_url)
+        if ($proxiedCategory !== null && $this->link_url !== '')
         {
             $this->link_url = $this->app()->router('public')->buildLink('canonical:categories', $proxiedCategory);
         }
@@ -229,10 +221,10 @@ class LinkForum extends XFCP_LinkForum
             'primary'     => true
         ];
         $structure->relations['ProxiedNode'] = [
-            'entity'      => 'XF:Node',
-            'type'        => Entity::TO_ONE,
-            'conditions'  => [['node_id', '=', '$sv_proxy_node_id']],
-            'primary'     => true
+            'entity'     => 'XF:Node',
+            'type'       => Entity::TO_ONE,
+            'conditions' => [['node_id', '=', '$sv_proxy_node_id']],
+            'primary'    => true
         ];
 
         $structure->getters['ProxiedForum'] = ['getter' => 'getProxiedForum', 'cache' => false];

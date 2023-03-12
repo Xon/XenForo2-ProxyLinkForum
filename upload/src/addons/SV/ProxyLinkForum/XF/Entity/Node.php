@@ -9,7 +9,7 @@ use XF\Entity\AbstractNode;
  */
 class Node extends XFCP_Node
 {
-    public function setData(?AbstractNode $data)
+    public function setData(?AbstractNode $data): void
     {
         $this->_getterCache['Data'] = $data;
     }
