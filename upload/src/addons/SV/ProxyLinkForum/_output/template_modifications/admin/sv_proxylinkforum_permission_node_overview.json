@@ -5,5 +5,5 @@
     "enabled": true,
     "action": "str_replace",
     "find": "{$node.NodeType.title}",
-    "replace": "$0 {{ ($node.node_type_id === 'LinkForum' && $node.Data.ProxiedNode) ? phrase('(sv_linkforumproxy_proxy)') : '' }}"
+    "replace": "$0 {{ $node.isProxiedNode() ? phrase('(sv_linkforumproxy_proxy)') : '' }}"
 }
