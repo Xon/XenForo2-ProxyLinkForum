@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\Permission\\NodePermissions",
+    "to_class": "SV\\ProxyLinkForum\\XF\\Permission\\NodePermissions",
+    "execute_order": 5845,
+    "active": true
+}

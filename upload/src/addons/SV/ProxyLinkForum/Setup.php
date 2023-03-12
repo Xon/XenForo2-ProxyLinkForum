@@ -2,6 +2,7 @@
 
 namespace SV\ProxyLinkForum;
 
+use SV\ProxyLinkForum\XF\Entity\LinkForum;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;
@@ -41,6 +42,21 @@ class Setup extends AbstractSetup
     public function upgrade2030000Step1(): void
     {
         $this->installStep1();
+    }
+
+    public function upgrade2040000Step1(): void
+    {
+        /** @var LinkForum[] $linkForums */
+        $linkForums = \XF::app()->finder('XF:LinkForum')
+                         ->where('sv_proxy_node_id', '<>', null)
+                         ->fetch();
+        $db = $this->db();
+        $db->beginTransaction();
+        foreach ($linkForums as $linkForum)
+        {
+            $linkForum->purgePermissions();
+        }
+        $db->commit();
     }
 
     public function uninstallStep1(): void

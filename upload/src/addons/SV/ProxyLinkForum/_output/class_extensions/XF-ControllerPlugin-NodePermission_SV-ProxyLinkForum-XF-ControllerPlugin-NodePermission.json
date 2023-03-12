@@ -1,0 +1,6 @@
+{
+    "from_class": "XF\\ControllerPlugin\\NodePermission",
+    "to_class": "SV\\ProxyLinkForum\\XF\\ControllerPlugin\\NodePermission",
+    "execute_order": 5845,
+    "active": true
+}

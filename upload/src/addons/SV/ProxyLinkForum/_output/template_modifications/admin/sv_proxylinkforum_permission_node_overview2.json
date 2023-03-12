@@ -1,0 +1,9 @@
+{
+    "template": "permission_node_overview",
+    "description": "Proxy forum permission depend on the target node",
+    "execution_order": 10,
+    "enabled": true,
+    "action": "str_replace",
+    "find": "{{ link('permissions/nodes', $node) }}",
+    "replace": "{{ link('permissions/nodes', $node.isProxiedNode() ? $node.Data.ProxiedNode : $node) }}"
+}

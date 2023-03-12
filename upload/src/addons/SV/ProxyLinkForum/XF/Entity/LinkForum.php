@@ -25,6 +25,23 @@ use XF\Mvc\Entity\Structure;
  */
 class LinkForum extends XFCP_LinkForum
 {
+    public function canView(&$error = null)
+    {
+        $proxiedForum = $this->ProxiedForum;
+        if ($proxiedForum != null)
+        {
+            return $proxiedForum->canView();
+        }
+
+        $proxiedCategory = $this->ProxiedCategory;
+        if ($proxiedCategory != null)
+        {
+            return $proxiedCategory->canView();
+        }
+
+        return parent::canView($error);
+    }
+
     /** @noinspection PhpUnnecessaryLocalVariableInspection */
     protected function addChildExtras(array $output, \XF\Entity\Node $node)
     {
@@ -74,7 +91,7 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeListExtras()
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum !== null && $proxiedForum->canView())
+        if ($proxiedForum !== null)
         {
             $output = $proxiedForum->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedForum;
@@ -83,7 +100,7 @@ class LinkForum extends XFCP_LinkForum
         }
 
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory !== null && $proxiedCategory->canView())
+        if ($proxiedCategory !== null)
         {
             $output = $proxiedCategory->getNodeListExtras() ?: [];
             $output['ProxiedNode'] = $proxiedCategory;
@@ -123,7 +140,7 @@ class LinkForum extends XFCP_LinkForum
     public function getNodeTemplateRenderer($depth)
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum !== null && $proxiedForum->canView())
+        if ($proxiedForum !== null)
         {
             return [
                 'template' => 'node_list_forum',
@@ -132,7 +149,7 @@ class LinkForum extends XFCP_LinkForum
         }
 
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory !== null && $proxiedCategory->canView())
+        if ($proxiedCategory !== null)
         {
             return [
                 'template' => 'node_list_category',
@@ -173,6 +190,20 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedNode_;
     }
 
+    public function purgePermissions(): void
+    {
+        $db = $this->db();
+
+        $db->query('DELETE FROM xf_permission_entry_content WHERE content_type = ? AND content_id = ?', [
+            'node',
+            $this->node_id,
+        ]);
+        $db->query('DELETE FROM xf_permission_cache_content WHERE content_type = ? AND content_id = ?', [
+            'node',
+            $this->node_id,
+        ]);
+    }
+
     protected function _preSave()
     {
         if ($this->sv_proxy_node_id === 0)
@@ -193,6 +224,16 @@ class LinkForum extends XFCP_LinkForum
         }
 
         parent::_preSave();
+    }
+
+    protected function _postSave()
+    {
+        parent::_postSave();
+
+        if ($this->isChanged('sv_proxy_node_id') && $this->sv_proxy_node_id !== null)
+        {
+            $this->purgePermissions();
+        }
     }
 
     /**
