@@ -10,6 +10,7 @@ use XF\Entity\AbstractNode;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Entity\Node as NodeEntity;
 use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
+use function array_values;
 use function assert;
 use function count;
 
@@ -78,9 +79,9 @@ class Node extends XFCP_Node
     }
 
     /**
-     * @param NodeEntity   $node
-     * @param AbstractNode $data
-     * @param NodeEntity   $parent
+     * @param NodeEntity      $node
+     * @param AbstractNode    $data
+     * @param NodeEntity|null $parent
      * @return NodeEntity
      */
     protected function cloneAsFake(NodeEntity $node, AbstractNode $data, ?NodeEntity $parent): NodeEntity
@@ -114,7 +115,7 @@ class Node extends XFCP_Node
     {
         $shimmedNodes = [];
         $nodes = $nodes->toArray();
-        $nodes = \array_values($nodes);
+        $nodes = array_values($nodes);
         $nodeCount = count($nodes);
 
         /** @var NodeEntity[] $nodes */

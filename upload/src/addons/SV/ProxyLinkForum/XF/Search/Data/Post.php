@@ -4,8 +4,10 @@ namespace SV\ProxyLinkForum\XF\Search\Data;
 
 use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
 use XF\Search\Query\MetadataConstraint;
+use function array_values;
 use function is_string;
 use function reset;
+use function substr;
 
 /**
  * Extends \XF\Search\Data\Post
@@ -73,7 +75,7 @@ class Post extends XFCP_Post
                 // patch nodes with '_' ids, these are pseudo-forums under the existing parent
                 // proxied forums are automatically children of the search node roots, so they should always be included
                 $change = true;
-                $nodeId = (int)\substr($nodeId, 1);
+                $nodeId = (int)substr($nodeId, 1);
             }
 
             /** @var \XF\Entity\Node $node */
@@ -91,8 +93,8 @@ class Post extends XFCP_Post
 
         if ($change)
         {
-            // ensure this is an json integer list, and not a json object of string values
-            $shimmedNodeIds = \array_values($shimmedNodeIds);
+            // ensure this is a json integer list, and not a json object of string values
+            $shimmedNodeIds = array_values($shimmedNodeIds);
             $constraint->setValues($shimmedNodeIds);
         }
 

@@ -25,6 +25,7 @@ use XF\Mvc\Entity\Structure;
  */
 class LinkForum extends XFCP_LinkForum
 {
+    /** @noinspection PhpUnnecessaryLocalVariableInspection */
     protected function addChildExtras(array $output,\XF\Entity\Node $node)
     {
         // has children, fetch stats for them
