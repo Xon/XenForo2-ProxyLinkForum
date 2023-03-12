@@ -26,7 +26,7 @@ use XF\Mvc\Entity\Structure;
 class LinkForum extends XFCP_LinkForum
 {
     /** @noinspection PhpUnnecessaryLocalVariableInspection */
-    protected function addChildExtras(array $output,\XF\Entity\Node $node)
+    protected function addChildExtras(array $output, \XF\Entity\Node $node)
     {
         // has children, fetch stats for them
         if ($node->lft >= $node->rgt)
@@ -99,10 +99,14 @@ class LinkForum extends XFCP_LinkForum
     public static function getListedWith()
     {
         $visitor = \XF::visitor();
-        $userId = $visitor->user_id;
-        $with = ['ProxiedForum.LastPostUser', 'ProxiedForum.LastThread', 'ProxiedForum', 'ProxiedForum.Node', 'ProxiedCategory', 'ProxiedCategory.Node'];
+        $userId = (int)$visitor->user_id;
+        $with = [
+            'ProxiedNode',
+            'ProxiedForum.LastPostUser', 'ProxiedForum.LastThread',
+            'ProxiedCategory',
+        ];
 
-        if ($userId)
+        if ($userId !== 0)
         {
             $with[] = 'ProxiedForum.Read|' . $userId;
             $with[] = 'ProxiedForum.LastThread.Read|' . $userId;
