@@ -5,6 +5,8 @@ namespace SV\ProxyLinkForum\XF\Search\Data;
 use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
 use XF\Search\Query\MetadataConstraint;
 use function array_values;
+use function count;
+use function is_callable;
 use function is_string;
 use function reset;
 use function substr;
@@ -62,7 +64,7 @@ class Post extends XFCP_Post
         }
     }
 
-    protected function rewriteProxiedNodes(MetadataConstraint $constraint): bool
+    protected function rewriteQueryProxiedNodes(\XF\Search\Query\Query $query, MetadataConstraint $constraint): bool
     {
         $em = \XF::em();
         $change = false;
@@ -93,6 +95,19 @@ class Post extends XFCP_Post
 
         if ($change)
         {
+            // no nodes, but there is a constraint, use an impossible node id to force this query to fail
+            if (count($shimmedNodeIds) === 0)
+            {
+                if (is_callable([$query, 'setIsImpossibleQuery']))
+                {
+                    // instead of throwing, mark as impossible and throw later
+                    $query->setIsImpossibleQuery();
+                }
+
+                $constraint->setValues([-1]);
+                return true;
+            }
+
             // ensure this is a json integer list, and not a json object of string values
             $shimmedNodeIds = array_values($shimmedNodeIds);
             $constraint->setValues($shimmedNodeIds);
@@ -128,7 +143,7 @@ class Post extends XFCP_Post
                 {
                     if ($constraint->getKey() === 'node')
                     {
-                        $this->rewriteProxiedNodes($constraint);
+                        $this->rewriteQueryProxiedNodes($query, $constraint);
                     }
                 }
             }
