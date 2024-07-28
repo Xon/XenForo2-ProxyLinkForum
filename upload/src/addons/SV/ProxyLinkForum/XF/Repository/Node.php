@@ -50,7 +50,7 @@ class Node extends XFCP_Node
      * @param NodeEntity|null $withinNode
      * @return AbstractCollection
      */
-    public function getNodeList(NodeEntity $withinNode = null)
+    public function getNodeList(?NodeEntity $withinNode = null)
     {
         $nodeList = parent::getNodeList($withinNode);
 
@@ -67,7 +67,7 @@ class Node extends XFCP_Node
      * @param null            $with
      * @return AbstractCollection
      */
-    public function getFullNodeListWithTypeData(NodeEntity $withinNode = null, $with = null)
+    public function getFullNodeListWithTypeData(?NodeEntity $withinNode = null, $with = null)
     {
         $nodeList = parent::getFullNodeListWithTypeData($withinNode, $with);
 
@@ -140,7 +140,7 @@ class Node extends XFCP_Node
                     $realNode = $realForum->Node;
                     $realData = $realForum;
                 }
-                else if ($realCategory = $linkForum->ProxiedCategory)
+                elseif ($realCategory = $linkForum->ProxiedCategory)
                 {
                     if (!$realCategory->canView())
                     {
