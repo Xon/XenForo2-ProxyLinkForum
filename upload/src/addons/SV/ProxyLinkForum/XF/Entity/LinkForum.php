@@ -52,7 +52,7 @@ class LinkForum extends XFCP_LinkForum
         }
 
         /** @var \SV\ProxyLinkForum\XF\Repository\Node $repo */
-        $repo = $this->repository('XF:Node');
+        $repo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
         $tree = $repo->svLinkForumsNodeTree ?? null;
         if ($tree === null)
         {
@@ -214,13 +214,13 @@ class LinkForum extends XFCP_LinkForum
         $proxiedForum = $this->ProxiedForum;
         if ($proxiedForum !== null && $this->link_url !== '')
         {
-            $this->link_url = $this->app()->router('public')->buildLink('canonical:forums', $proxiedForum);
+            $this->link_url = \XF::app()->router('public')->buildLink('canonical:forums', $proxiedForum);
         }
 
         $proxiedCategory = $this->ProxiedCategory;
         if ($proxiedCategory !== null && $this->link_url !== '')
         {
-            $this->link_url = $this->app()->router('public')->buildLink('canonical:categories', $proxiedCategory);
+            $this->link_url = \XF::app()->router('public')->buildLink('canonical:categories', $proxiedCategory);
         }
 
         parent::_preSave();

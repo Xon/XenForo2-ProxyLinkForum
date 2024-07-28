@@ -103,7 +103,7 @@ class Node extends XFCP_Node
             $arr[$key] = $node->getValueSourceEncoded($key);
         }
         // create the fake node & setup relationships
-        $fakeNode = $this->app()->em()->instantiateEntity('XF:Node', $arr);
+        $fakeNode = \SV\StandardLib\Helper::instantiateEntity(\XF\Entity\Node::class, $arr);
         assert($fakeNode instanceof ExtendedNodeEntity);
         $fakeNode->hydrateRelation('Parent', $parent);
         $fakeNode->setData($data);
@@ -182,7 +182,7 @@ class Node extends XFCP_Node
             $shimmedNodes[$nodeId] = $node;
         }
 
-        return $this->app()->em()->getBasicCollection($shimmedNodes);
+        return \XF::app()->em()->getBasicCollection($shimmedNodes);
     }
 
     public function getNodeListExtras(\XF\Tree $nodeTree)

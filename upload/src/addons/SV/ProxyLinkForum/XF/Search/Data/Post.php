@@ -27,7 +27,7 @@ class Post extends XFCP_Post
      */
     public function getSearchFormData()
     {
-        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
+        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\LinkForum::class);
         $this->armSearchNodeHacks = $structure->relations['ProxiedForum'] ?? false;
         try
         {
@@ -47,7 +47,7 @@ class Post extends XFCP_Post
     protected function getSearchableNodeTree()
     {
         /** @var ExtendedNodeRepo $nodeRepo */
-        $nodeRepo = \XF::repository('XF:Node');
+        $nodeRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
 
         if ($this->armSearchNodeHacks)
         {
@@ -81,7 +81,7 @@ class Post extends XFCP_Post
             }
 
             /** @var \XF\Entity\Node|false $node */
-            $node = $em->findCached('XF:Node', $nodeId);
+            $node = \SV\StandardLib\Helper::findCached(\XF\Entity\Node::class, $nodeId);
             if (!$node || $node->node_type_id === 'LinkForum')
             {
                 // A link-proxy which is not a proxy forum, skip
@@ -124,9 +124,9 @@ class Post extends XFCP_Post
                                     $request->filter('c.child_nodes', 'bool');
 
         /** @var ExtendedNodeRepo $nodeRepo */
-        $nodeRepo = \XF::repository('XF:Node');
+        $nodeRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
         $nodeRepo->shimmedProxyNodes = false;
-        $structure = \XF::em()->getEntityStructure('XF:LinkForum');
+        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\LinkForum::class);
         if ($this->armSearchNodeHacks && ($structure->relations['ProxiedForum'] ?? false))
         {
             $nodeRepo->setInjectProxiedSubNodesForSvProxyLinkForum('getFullNodeListWithTypeData');
