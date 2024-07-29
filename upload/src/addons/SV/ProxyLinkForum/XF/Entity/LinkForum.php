@@ -192,7 +192,7 @@ class LinkForum extends XFCP_LinkForum
 
     public function purgePermissions(): void
     {
-        $db = $this->db();
+        $db = \XF::db();
 
         $db->query('DELETE FROM xf_permission_entry_content WHERE content_type = ? AND content_id = ?', [
             'node',

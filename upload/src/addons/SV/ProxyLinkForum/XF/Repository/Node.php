@@ -182,7 +182,7 @@ class Node extends XFCP_Node
             $shimmedNodes[$nodeId] = $node;
         }
 
-        return \XF::app()->em()->getBasicCollection($shimmedNodes);
+        return \XF::em()->getBasicCollection($shimmedNodes);
     }
 
     public function getNodeListExtras(\XF\Tree $nodeTree)
