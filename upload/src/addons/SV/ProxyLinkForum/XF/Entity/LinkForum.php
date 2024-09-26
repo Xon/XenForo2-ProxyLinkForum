@@ -28,13 +28,13 @@ class LinkForum extends XFCP_LinkForum
     public function canView(&$error = null)
     {
         $proxiedForum = $this->ProxiedForum;
-        if ($proxiedForum != null)
+        if ($proxiedForum !== null)
         {
             return $proxiedForum->canView();
         }
 
         $proxiedCategory = $this->ProxiedCategory;
-        if ($proxiedCategory != null)
+        if ($proxiedCategory !== null)
         {
             return $proxiedCategory->canView();
         }
