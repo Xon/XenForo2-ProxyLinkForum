@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2017-2023 Perihelion Media Works
+Copyright (c) 2017-2024 Perihelion Media Works
 Copyright (c) 2021 Audentio, LLC
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
