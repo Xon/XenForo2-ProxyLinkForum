@@ -125,13 +125,14 @@ class LinkForum extends XFCP_LinkForum
      */
     public static function getListedWith()
     {
+        $with = parent::getListedWith();
         $visitor = \XF::visitor();
         $userId = (int)$visitor->user_id;
-        $with = [
+        $with = array_merge($with, [
             'ProxiedNode',
             'ProxiedForum.LastPostUser', 'ProxiedForum.LastThread',
             'ProxiedCategory',
-        ];
+        ]);
 
         if ($userId !== 0)
         {
