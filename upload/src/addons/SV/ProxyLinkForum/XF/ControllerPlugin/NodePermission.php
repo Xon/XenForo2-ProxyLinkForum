@@ -5,6 +5,7 @@ namespace SV\ProxyLinkForum\XF\ControllerPlugin;
 
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum;
+use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
 use XF\Mvc\ParameterBag;
 
 /**
@@ -14,7 +15,7 @@ class NodePermission extends XFCP_NodePermission
 {
     public function actionList(ParameterBag $params)
     {
-        /** @var \SV\ProxyLinkForum\XF\Entity\Node $record */
+        /** @var ExtendedNodeEntity $record */
         $record = $this->assertRecordExists($this->entityIdentifier, $params->{$this->primaryKey});
         if ($record->isProxiedNode())
         {
@@ -28,7 +29,7 @@ class NodePermission extends XFCP_NodePermission
 
     public function actionEdit(ParameterBag $params, $type = null)
     {
-        /** @var \SV\ProxyLinkForum\XF\Entity\Node $record */
+        /** @var ExtendedNodeEntity $record */
         $record = $this->assertRecordExists($this->entityIdentifier, $params->{$this->primaryKey});
         if ($record->isProxiedNode())
         {
@@ -40,7 +41,7 @@ class NodePermission extends XFCP_NodePermission
 
     public function actionSave(ParameterBag $params, $type = null)
     {
-        /** @var \SV\ProxyLinkForum\XF\Entity\Node $record */
+        /** @var ExtendedNodeEntity $record */
         $record = $this->assertRecordExists($this->entityIdentifier, $params->{$this->primaryKey});
         if ($record->isProxiedNode())
         {

@@ -6,10 +6,12 @@
 namespace SV\ProxyLinkForum\XF\Repository;
 
 use SV\ProxyLinkForum\XF\Entity\LinkForum as ExtendedLinkForumEntity;
+use SV\StandardLib\Helper;
 use XF\Entity\AbstractNode;
 use XF\Mvc\Entity\AbstractCollection;
 use XF\Entity\Node as NodeEntity;
 use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
+use XF\Tree;
 use function array_key_exists;
 use function array_values;
 use function assert;
@@ -26,7 +28,7 @@ class Node extends XFCP_Node
     /** @var array<string,bool> */
     protected $injectProxiedSubNodesForSvProxyLinkForum = [];
 
-    /** @var \XF\Tree|null */
+    /** @var Tree|null */
     public $svLinkForumsNodeTree;
     /** @var array<int,bool> */
     public $svLinkForumNodesSeen = [];
@@ -103,7 +105,7 @@ class Node extends XFCP_Node
             $arr[$key] = $node->getValueSourceEncoded($key);
         }
         // create the fake node & setup relationships
-        $fakeNode = \SV\StandardLib\Helper::instantiateEntity(\XF\Entity\Node::class, $arr);
+        $fakeNode = Helper::instantiateEntity(NodeEntity::class, $arr);
         assert($fakeNode instanceof ExtendedNodeEntity);
         $fakeNode->hydrateRelation('Parent', $parent);
         $fakeNode->setData($data);
@@ -185,7 +187,7 @@ class Node extends XFCP_Node
         return \XF::em()->getBasicCollection($shimmedNodes);
     }
 
-    public function getNodeListExtras(\XF\Tree $nodeTree)
+    public function getNodeListExtras(Tree $nodeTree)
     {
         $this->svLinkForumsNodeTree = $nodeTree;
         $this->svLinkForumNodesSeen = [];

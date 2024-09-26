@@ -2,6 +2,8 @@
 
 namespace SV\ProxyLinkForum\XF\Admin\Controller;
 
+use XF\Entity\AbstractNode as AbstractNodeEntity;
+use XF\Entity\Node as NodeEntity;
 use XF\Mvc\FormAction;
 
 /**
@@ -11,11 +13,11 @@ use XF\Mvc\FormAction;
 class LinkForum extends XFCP_LinkForum
 {
     /**
-     * @param FormAction $form
-     * @param \XF\Entity\Node $node
-     * @param \XF\Entity\AbstractNode $data
+     * @param FormAction         $form
+     * @param NodeEntity         $node
+     * @param AbstractNodeEntity $data
      */
-    protected function saveTypeData(FormAction $form, \XF\Entity\Node $node, \XF\Entity\AbstractNode $data)
+    protected function saveTypeData(FormAction $form, NodeEntity $node, AbstractNodeEntity $data)
     {
         parent::saveTypeData($form, $node, $data);
 

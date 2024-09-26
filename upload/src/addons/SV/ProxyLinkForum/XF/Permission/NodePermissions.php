@@ -2,6 +2,8 @@
 
 namespace SV\ProxyLinkForum\XF\Permission;
 
+use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
+
 /**
  * Extends \XF\Permission\NodePermissions
  */
@@ -12,7 +14,7 @@ class NodePermissions extends XFCP_NodePermissions
      */
     public function getContentTree()
     {
-        return parent::getContentTree()->filter(function (int $id, \SV\ProxyLinkForum\XF\Entity\Node $node) {
+        return parent::getContentTree()->filter(function (int $id, ExtendedNodeEntity $node) {
             return !$node->isProxiedNode();
         });
     }

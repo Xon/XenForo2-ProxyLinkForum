@@ -2,7 +2,6 @@
 
 namespace SV\ProxyLinkForum;
 
-use SV\ProxyLinkForum\XF\Entity\LinkForum;
 use SV\StandardLib\InstallerHelper;
 use XF\AddOn\AbstractSetup;
 use XF\AddOn\StepRunnerInstallTrait;

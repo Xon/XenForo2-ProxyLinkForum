@@ -3,7 +3,14 @@
 namespace SV\ProxyLinkForum\XF\Search\Data;
 
 use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
+use SV\StandardLib\Helper;
+use XF\Entity\LinkForum as LinkForumEntity;
+use XF\Entity\Node as NodeEntity;
+use XF\Http\Request;
+use XF\Repository\Node as NodeRepo;
 use XF\Search\Query\MetadataConstraint;
+use XF\Search\Query\Query;
+use XF\Tree;
 use function array_values;
 use function count;
 use function is_callable;
@@ -27,7 +34,7 @@ class Post extends XFCP_Post
      */
     public function getSearchFormData()
     {
-        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\LinkForum::class);
+        $structure = Helper::getEntityStructure(LinkForumEntity::class);
         $this->armSearchNodeHacks = $structure->relations['ProxiedForum'] ?? false;
         try
         {
@@ -41,13 +48,13 @@ class Post extends XFCP_Post
     }
 
     /**
-     * @return \XF\Tree
+     * @return Tree
      * @noinspection PhpMissingReturnTypeInspection
      */
     protected function getSearchableNodeTree()
     {
         /** @var ExtendedNodeRepo $nodeRepo */
-        $nodeRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
+        $nodeRepo = Helper::repository(NodeRepo::class);
 
         if ($this->armSearchNodeHacks)
         {
@@ -64,9 +71,8 @@ class Post extends XFCP_Post
         }
     }
 
-    protected function rewriteQueryProxiedNodes(\XF\Search\Query\Query $query, MetadataConstraint $constraint): bool
+    protected function rewriteQueryProxiedNodes(Query $query, MetadataConstraint $constraint): bool
     {
-        $em = \XF::em();
         $change = false;
         $shimmedNodeIds = [];
         $nodeIds = $constraint->getValues();
@@ -80,9 +86,8 @@ class Post extends XFCP_Post
                 $nodeId = (int)substr($nodeId, 1);
             }
 
-            /** @var \XF\Entity\Node|false $node */
-            $node = \SV\StandardLib\Helper::findCached(\XF\Entity\Node::class, $nodeId);
-            if (!$node || $node->node_type_id === 'LinkForum')
+            $node = Helper::findCached(NodeEntity::class, $nodeId);
+            if ($node === null || $node->node_type_id === 'LinkForum')
             {
                 // A link-proxy which is not a proxy forum, skip
                 $change = true;
@@ -116,7 +121,7 @@ class Post extends XFCP_Post
         return $change;
     }
 
-    public function applyTypeConstraintsFromInput(\XF\Search\Query\Query $query, \XF\Http\Request $request, array &$urlConstraints)
+    public function applyTypeConstraintsFromInput(Query $query, Request $request, array &$urlConstraints)
     {
         $searchNodeRoots = $this->searchNodeRoots ?? $request->filter('c.nodes', 'array-uint');
         $this->armSearchNodeHacks = !$request->filter('c.thread', 'uint') &&
@@ -124,9 +129,9 @@ class Post extends XFCP_Post
                                     $request->filter('c.child_nodes', 'bool');
 
         /** @var ExtendedNodeRepo $nodeRepo */
-        $nodeRepo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
+        $nodeRepo = Helper::repository(NodeRepo::class);
         $nodeRepo->shimmedProxyNodes = false;
-        $structure = \SV\StandardLib\Helper::getEntityStructure(\XF\Entity\LinkForum::class);
+        $structure = Helper::getEntityStructure(LinkForumEntity::class);
         if ($this->armSearchNodeHacks && ($structure->relations['ProxiedForum'] ?? false))
         {
             $nodeRepo->setInjectProxiedSubNodesForSvProxyLinkForum('getFullNodeListWithTypeData');

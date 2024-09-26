@@ -5,23 +5,30 @@
 
 namespace SV\ProxyLinkForum\XF\Entity;
 
+use SV\ProxyLinkForum\XF\Repository\Node as ExtendedNodeRepo;
+use SV\StandardLib\Helper;
+use XF\Entity\Category as CategoryEntity;
+use XF\Entity\Forum as ForumEntity;
+use XF\Entity\Node as NodeEntity;
 use XF\Mvc\Entity\Entity;
 use XF\Mvc\Entity\Structure;
+use XF\Repository\Node as NodeRepo;
+use XF\SubTree;
+use function array_merge;
 
 /**
  * COLUMNS
- * @property int|null $sv_proxy_node_id
- * @property bool $sv_proxy_search
  *
+ * @property int|null            $sv_proxy_node_id
+ * @property bool                $sv_proxy_search
  * GETTERS
- * @property-read \XF\Entity\Node $ProxiedNode
- * @property-read \XF\Entity\Forum $ProxiedForum
- * @property-read \XF\Entity\Category $ProxiedCategory
- *
+ * @property-read NodeEntity     $ProxiedNode
+ * @property-read ForumEntity    $ProxiedForum
+ * @property-read CategoryEntity $ProxiedCategory
  * RELATIONS
- * @property-read \XF\Entity\Node $ProxiedNode_
- * @property-read \XF\Entity\Forum $ProxiedForum_
- * @property-read \XF\Entity\Category $ProxiedCategory_
+ * @property-read NodeEntity     $ProxiedNode_
+ * @property-read ForumEntity    $ProxiedForum_
+ * @property-read CategoryEntity $ProxiedCategory_
  */
 class LinkForum extends XFCP_LinkForum
 {
@@ -43,7 +50,7 @@ class LinkForum extends XFCP_LinkForum
     }
 
     /** @noinspection PhpUnnecessaryLocalVariableInspection */
-    protected function addChildExtras(array $output, \XF\Entity\Node $node)
+    protected function addChildExtras(array $output, NodeEntity $node)
     {
         // has children, fetch stats for them
         if ($node->lft >= $node->rgt)
@@ -51,8 +58,8 @@ class LinkForum extends XFCP_LinkForum
             return $output;
         }
 
-        /** @var \SV\ProxyLinkForum\XF\Repository\Node $repo */
-        $repo = \SV\StandardLib\Helper::repository(\XF\Repository\Node::class);
+        /** @var ExtendedNodeRepo $repo */
+        $repo = Helper::repository(NodeRepo::class);
         $tree = $repo->svLinkForumsNodeTree ?? null;
         if ($tree === null)
         {
@@ -68,11 +75,11 @@ class LinkForum extends XFCP_LinkForum
         $repo->svLinkForumNodesSeen[$nodeId] = true;
 
 
-        $f = function (\XF\Entity\Node $node, array $children) use ($repo, &$f, &$finalOutput) {
+        $f = function (NodeEntity $node, array $children) use ($repo, &$f, &$finalOutput) {
             $childOutput = [];
             foreach ($children as $id => $child)
             {
-                /** @var \XF\SubTree $child */
+                /** @var SubTree $child */
                 $childOutput[$id] = $f($child->record, $child->children());
             }
 
@@ -160,7 +167,7 @@ class LinkForum extends XFCP_LinkForum
         return parent::getNodeTemplateRenderer($depth);
     }
 
-    protected function getProxiedForum(): ?\XF\Entity\Forum
+    protected function getProxiedForum(): ?ForumEntity
     {
         if ($this->sv_proxy_node_id === null)
         {
@@ -170,7 +177,7 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedForum_;
     }
 
-    protected function getProxiedCategory(): ?\XF\Entity\Category
+    protected function getProxiedCategory(): ?CategoryEntity
     {
         if ($this->sv_proxy_node_id === null)
         {
@@ -180,7 +187,7 @@ class LinkForum extends XFCP_LinkForum
         return $this->ProxiedCategory_;
     }
 
-    protected function getProxiedNode(): ?\XF\Entity\Node
+    protected function getProxiedNode(): ?NodeEntity
     {
         if ($this->sv_proxy_node_id === null)
         {
