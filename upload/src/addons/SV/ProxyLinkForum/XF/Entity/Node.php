@@ -5,7 +5,7 @@ namespace SV\ProxyLinkForum\XF\Entity;
 use XF\Entity\AbstractNode;
 
 /**
- * Extends \XF\Entity\Node
+ * @extends \XF\Entity\Node
  */
 class Node extends XFCP_Node
 {

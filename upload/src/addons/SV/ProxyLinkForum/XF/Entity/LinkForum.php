@@ -17,6 +17,8 @@ use XF\SubTree;
 use function array_merge;
 
 /**
+ * @extends \XF\Entity\LinkForum
+ *
  * COLUMNS
  *
  * @property int|null            $sv_proxy_node_id

@@ -5,7 +5,7 @@ namespace SV\ProxyLinkForum\XF\Permission;
 use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
 
 /**
- * Extends \XF\Permission\NodePermissions
+ * @extends \XF\Permission\NodePermissions
  */
 class NodePermissions extends XFCP_NodePermissions
 {

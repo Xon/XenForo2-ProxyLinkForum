@@ -7,8 +7,7 @@ use XF\Entity\Node as NodeEntity;
 use XF\Mvc\FormAction;
 
 /**
- * Class LinkForum
- * @package SV\ProxyLinkForum\XF\Admin\Controller
+ * @extends \XF\Admin\Controller\LinkForum
  */
 class LinkForum extends XFCP_LinkForum
 {

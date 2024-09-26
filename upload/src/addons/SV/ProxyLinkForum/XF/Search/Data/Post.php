@@ -19,7 +19,7 @@ use function reset;
 use function substr;
 
 /**
- * Extends \XF\Search\Data\Post
+ * @extends \XF\Search\Data\Post
  */
 class Post extends XFCP_Post
 {

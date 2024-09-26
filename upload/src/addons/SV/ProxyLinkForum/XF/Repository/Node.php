@@ -19,6 +19,7 @@ use function count;
 
 /**
  * @since 2.1.5
+ * @extends \XF\Repository\Node
  */
 class Node extends XFCP_Node
 {

@@ -9,7 +9,7 @@ use SV\ProxyLinkForum\XF\Entity\Node as ExtendedNodeEntity;
 use XF\Mvc\ParameterBag;
 
 /**
- * Extends \XF\ControllerPlugin\NodePermission
+ * @extends \XF\ControllerPlugin\NodePermission
  */
 class NodePermission extends XFCP_NodePermission
 {
